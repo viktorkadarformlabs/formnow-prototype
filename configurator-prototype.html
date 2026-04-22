@@ -1,0 +1,2895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form Now — Configurator Prototype</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Midnight Sans RD Pro';
+      src: local('MidnightSansRDPro-48SemiBold'), local('Midnight Sans RD Pro 48 SemiBold');
+      font-weight: 600;
+      font-style: normal;
+    }
+    @font-face {
+      font-family: 'Supreme Variable';
+      src: local('SupremeVariable-Extrabold'), local('Supreme Variable');
+      font-weight: 100 900;
+      font-style: normal;
+    }
+  </style>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Supreme Variable', 'Supreme', 'DM Sans', system-ui, sans-serif;
+      background: #1A1918;
+      color: #232018;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* ─── MAIN ─────────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      padding: 8px;
+      display: flex;
+      overflow: hidden;
+      min-height: 0;
+      gap: 0;
+    }
+    .inner-frame {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      overflow: hidden;
+      gap: 0;
+    }
+
+    /* ─── LEFT PANEL ───────────────────────────────────────────── */
+    .material-panel {
+      flex: 1 0 0;
+      min-width: 400px;
+      display: flex;
+      flex-direction: column;
+      background: #F3F0E9;
+      border: 1px solid #DDD9CF;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .mat-header {
+      height: 40px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 4px;
+      background: #FEFDF9;
+      border-bottom: 1px solid #E5E1D6;
+    }
+    .mat-header-icons {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .mat-sort-btn {
+      height: 26px;
+      padding: 1px 2px 1px 12px;
+      border: 1px solid #E5E1D6;
+      border-radius: 6px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      color: #232018;
+      letter-spacing: -0.24px;
+      white-space: nowrap;
+    }
+    .mat-sort-btn:hover { border-color: #868178; }
+    .mat-sort-chevron { position: relative; width: 16px; height: 16px; flex-shrink: 0; }
+    .mat-sort-chevron img { position: absolute; width: 6.333px; height: 3.667px; top: 50%; left: 50%; transform: translate(-50%,-50%); max-width: none; display: block; }
+    .mat-layout-group {
+      height: 26px;
+      padding: 1px 4px;
+      border: 1px solid #DDD9CF;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+    }
+    .mat-layout-icon { position: relative; width: 20px; height: 20px; flex-shrink: 0; }
+    .mat-layout-icon img { position: absolute; top: 16.67%; left: 12.5%; right: 12.5%; bottom: 16.67%; width: 75%; height: 66.66%; max-width: none; display: block; }
+    .mat-header-title {
+      font-size: 16px; font-weight: 500; color: #232018;
+      letter-spacing: -0.01em;
+    }
+    .mat-header-count {
+      font-size: 12px; color: #868178;
+      letter-spacing: -0.01em;
+      margin-left: auto;
+    }
+    .mat-filters {
+      height: 40px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      gap: 4px;
+      border-bottom: 1px solid #E5E1D6;
+    }
+    .filter-chip {
+      height: 26px; padding: 0 10px;
+      border-radius: 6px; border: 1px solid #D5D1C9;
+      background: transparent;
+      font-family: inherit; font-size: 12px; font-weight: 500;
+      color: #868178; letter-spacing: -0.01em;
+      cursor: pointer;
+    }
+    .filter-chip.active {
+      background: #232018; border-color: #232018; color: #FEFDF9;
+    }
+    .filter-chip:hover:not(.active) { border-color: #868178; color: #232018; }
+    .filter-chip-fastest { display: flex; align-items: center; gap: 4px; }
+    .filter-bolt-icon { width: 9px; height: 14px; display: block; flex-shrink: 0; max-width: none; filter: brightness(0) opacity(0.5); }
+    .filter-chip:hover .filter-bolt-icon { filter: brightness(0); }
+    .filter-chip.active .filter-bolt-icon { filter: brightness(0) invert(1); }
+    .mat-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      scrollbar-width: none;
+    }
+    .mat-scroll::-webkit-scrollbar { display: none; }
+    .mat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 8px;
+      align-items: start;
+    }
+
+    /* ─── MATERIAL CARD ────────────────────────────────────────── */
+    .mat-card {
+      height: 206px;
+      max-width: 240px;
+      width: 100%;
+      background: #ECE8DF;
+      border: 1px solid #E5E1D6;
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.18s ease;
+      position: relative;
+    }
+    .mat-card:hover, .mat-card.dropdown-active {
+      background: #FEFDF9;
+      border-color: #E5E1D6;
+    }
+    .mat-card.selected {
+      background: #FEFDF9;
+      border-color: #A2A6EE;
+    }
+
+    /* image frame: clips thumbnail to 82px height */
+    .card-img-frame {
+      width: 144px;
+      height: 82px;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-shrink: 0;
+      position: relative;
+      align-self: center;
+    }
+    .card-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      inset: 0;
+    }
+
+    /* tech tag — top-right, positioned on card outside overflow-clip frame */
+    .card-tag-wrap {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 4;
+    }
+    .tech-tag {
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      display: flex; align-items: center;
+    }
+    .tech-tag.sla {
+      border: 1px solid #868178;
+      color: #232018;
+      background: transparent;
+    }
+    .tech-tag.sls {
+      background: #666259;
+      color: #FEFDF9;
+      border: none;
+    }
+
+    /* bookmark — top-left of image frame, Figma: 16×16 container, inner inset 9.38% 20.63% */
+    .card-bookmark {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 16px;
+      height: 16px;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 5;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card-bookmark-inner {
+      position: absolute;
+      top: 9.38%; right: 20.63%; bottom: 9.37%; left: 20.62%;
+    }
+    .card-bookmark-inner img,
+    .card-bookmark-inner svg {
+      position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; display: block;
+    }
+    .mat-card:hover .card-bookmark,
+    .mat-card.dropdown-active .card-bookmark,
+    .mat-card.selected .card-bookmark,
+    .mat-card .card-bookmark.bookmarked { opacity: 1; }
+
+    /* title stack — flex:1, centered vertically, items centered */
+    .card-body {
+      flex: 1 0 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+    .mat-card:hover .card-body,
+    .mat-card.dropdown-active .card-body,
+    .mat-card.selected .card-body {
+      justify-content: flex-start;
+    }
+
+    .card-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #232018;
+      letter-spacing: -0.01em;
+      line-height: 1.5;
+      text-align: center;
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .card-price {
+      font-size: 14px;
+      font-weight: 400;
+      color: #232018;
+      letter-spacing: -0.01em;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* new tag — always 18px placeholder, hidden on hover/selected */
+    .card-new-row {
+      height: 18px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mat-card:hover .card-new-row,
+    .mat-card.dropdown-active .card-new-row,
+    .mat-card.selected .card-new-row { display: none; }
+
+    .badge-new {
+      height: 18px;
+      padding: 0 6px;
+      border-radius: 4px;
+      background: #E7F4DF;
+      border: 1px solid #A4D08F;
+      color: #003805;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      display: flex; align-items: center;
+    }
+
+    /* delivery placeholder — always 18px, hidden on hover/selected */
+    .card-delivery-row {
+      height: 18px;
+      flex-shrink: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mat-card:hover .card-delivery-row,
+    .mat-card.dropdown-active .card-delivery-row,
+    .mat-card.selected .card-delivery-row { display: none; }
+
+    /* delivery tag — the actual bordered pill inside the placeholder */
+    .card-delivery-tag {
+      height: 18px;
+      padding: 0 6px;
+      border: 1px solid #D2CEC4;
+      border-radius: 4px;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    /* delivery bolt — 10×16 img */
+    .delivery-icon { width: 10px; height: 16px; display: block; flex-shrink: 0; max-width: none; }
+    .delivery-text {
+      font-size: 12px; color: #232018; letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    /* card-extras — absolute, GPU-composited slide in (no layout reflow) */
+    .card-extras {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      height: 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transform: translateY(64px);
+      opacity: 0;
+      will-change: transform, opacity;
+      transition: transform 0.18s ease, opacity 0.15s ease;
+    }
+    .mat-card:hover .card-extras,
+    .mat-card.dropdown-active .card-extras,
+    .mat-card.selected .card-extras {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .info-tag {
+      height: 26px;
+      width: 100%;
+      border: 1px solid #A2A6EE;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      gap: 4px;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+    /* supports icon — 24×24 container, two inner positioning variants from Figma */
+    .info-tag-icon { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+    .info-tag.mixed [data-finish-icon] { display: none; }
+    .info-tag { position: relative; }
+    .info-tag.mixed { justify-content: center; }
+    .info-tag.mixed .info-tag-chevron { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); }
+    .info-tag-icon-inner-a { position: absolute; width: 17px; height: 12.5px; left: 3px; top: 6.5px; }
+    .info-tag-icon-inner-b { position: absolute; width: 14.999px; height: 13.333px; left: 4px; top: 5.32px; }
+    .info-tag-icon-inner-a img { position: absolute; top: -4%; right: -2.94%; bottom: -4%; left: -2.94%; max-width: none; display: block; width: 105.88%; height: 108%; }
+    .info-tag-icon-inner-b img { position: absolute; top: -3.75%; right: -3.33%; bottom: -3.75%; left: -3.33%; max-width: none; display: block; width: 106.66%; height: 107.5%; }
+    .info-tag-text {
+      font-size: 12px; font-weight: 400; color: #232018;
+      letter-spacing: -0.01em;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+    /* chevron — 24×24 container, 9.5×5.5 img centered */
+    .info-tag-chevron { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+    .info-tag-chevron img { position: absolute; width: 9.5px; height: 5.5px; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: none; display: block; }
+
+    .see-details-btn {
+      height: 26px;
+      width: 100%;
+      background: #232018;
+      color: #FEFDF9;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: -0.24px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .see-details-btn:hover { background: #3A3835; }
+
+    /* ─── PANEL HANDLE (vertical, between left and right) ─────── */
+    .panel-handle {
+      width: 7px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: ew-resize;
+      user-select: none;
+    }
+    .panel-handle:hover .panel-handle-pill,
+    .panel-handle.dragging .panel-handle-pill { background: #908C83; }
+    .panel-handle-pill {
+      width: 3px;
+      height: 48px;
+      background: #7D7B78;
+      border: 1px solid rgba(183,180,175,0.5);
+      border-radius: 8px;
+    }
+
+    /* ─── RIGHT PANEL ──────────────────────────────────────────── */
+    .right-panel {
+      width: 400px;
+      min-width: 400px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+    }
+
+    /* 3D Viewport Module */
+    .viewport-module {
+      height: 290px;
+      min-height: 240px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      background: linear-gradient(to bottom, #666259 0%, #BFBBB1 52.4%, #FEFDF9 100%);
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      position: relative;
+    }
+    .vp-top-bar {
+      display: flex;
+      justify-content: flex-end;
+      position: relative;
+      z-index: 3;
+    }
+    .vp-info-pill {
+      background: #FEFDF9;
+      border-radius: 8px;
+      padding: 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: #232018;
+      letter-spacing: -0.01em;
+      line-height: 1.5;
+    }
+    .vp-info-pill-sep {
+      width: 1px;
+      height: 16px;
+      background: #E5E1D6;
+    }
+    .vp-info-pill-btn {
+      font-size: 12px;
+      color: #000;
+      cursor: pointer;
+      padding: 0 2px;
+    }
+    .vp-info-pill-icon { width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; overflow: hidden; }
+    .vp-info-pill-icon img { width: 18px; height: 18px; display: block; object-fit: contain; }
+    .vp-info-pill-icon svg { display: block; }
+    .vp-model-area {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .vp-object-group {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0;
+      height: 0;
+    }
+    .vp-model {
+      position: absolute;
+      width: 243px;
+      height: 250.811px;
+      left: 8.5px;
+      top: -2.59px;
+      transform: translate(-50%, -50%);
+    }
+    .vp-shadow {
+      position: absolute;
+      width: 230px;
+      height: 100.762px;
+      left: 7px;
+      top: 150px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 219.048px;
+      filter: blur(18.254px);
+    }
+    .vp-model-img-wrap {
+      position: absolute;
+      width: 391.838px;
+      height: 251.094px;
+      left: -74.23px;
+      top: -0.21px;
+      overflow: hidden;
+    }
+    .vp-model-img-wrap img {
+      position: absolute;
+      left: 0;
+      top: -31.38%;
+      width: 100%;
+      height: 155.94%;
+      max-width: none;
+      display: block;
+    }
+    .vp-tint {
+      position: absolute;
+      left: 0;
+      top: -31.38%;
+      width: 100%;
+      height: 155.94%;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      background: transparent;
+      transition: background 0.18s ease;
+      -webkit-mask-image: url('https://www.figma.com/api/mcp/asset/0d10a3b1-e4a7-4d48-b4da-911acde9b248');
+      mask-image: url('https://www.figma.com/api/mcp/asset/0d10a3b1-e4a7-4d48-b4da-911acde9b248');
+      -webkit-mask-size: 100% 100%;
+      mask-size: 100% 100%;
+      -webkit-mask-position: 0 0;
+      mask-position: 0 0;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+    }
+    .vp-dim-asset {
+      position: absolute;
+      pointer-events: none;
+    }
+    .vp-dim-asset img { width: 100%; height: 100%; display: block; max-width: none; }
+    .vp-dim-line-110 {
+      width: 8.224px;
+      height: 125px;
+      left: -134px;
+      top: -15.5px;
+      transform: translate(-50%, -50%);
+    }
+    .vp-dim-line-125 {
+      width: 142.5px;
+      height: 72.15px;
+      left: -66.75px;
+      top: 92.07px;
+      transform: translate(-50%, -50%);
+    }
+    .vp-dim-line-190 {
+      width: 130.631px;
+      height: 65.716px;
+      left: 95.32px;
+      top: 92.86px;
+      transform: translate(-50%, -50%);
+    }
+    .vp-dim-label {
+      position: absolute;
+      background: #F3F0E9;
+      border: 1px solid #D2CEC4;
+      border-radius: 8px;
+      padding: 2px 8px;
+      font-size: 16px;
+      color: #666259;
+      white-space: nowrap;
+      line-height: 1.5;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+    .vp-dim-label-110 { left: -128.5px; top: -10.5px; }
+    .vp-dim-label-125 { left: -85.5px;  top: 94.5px; }
+    .vp-dim-label-190 { left: 106px;    top: 83.5px; }
+    .vp-handle {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      cursor: grab;
+    }
+    .vp-handle svg { width: 18px; height: 18px; transform: rotate(-90deg); }
+
+    /* HandleBar (horizontal, between viewport and model list) */
+    .handle-bar {
+      height: 3px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: ns-resize;
+      user-select: none;
+      position: relative;
+    }
+    .handle-bar::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -5px;
+      bottom: -5px;
+    }
+    .handle-bar-pill {
+      width: 48px;
+      height: 3px;
+      background: #7D7B78;
+      border: 1px solid rgba(183,180,175,0.5);
+      border-radius: 8px;
+      transition: background 0.15s ease;
+    }
+    .handle-bar:hover .handle-bar-pill,
+    .handle-bar.dragging .handle-bar-pill { background: #908C83; }
+
+    /* Model List Module */
+    .model-list-module {
+      flex: 1 0 0;
+      min-height: 300px;
+      background: #FEFDF9;
+      border: 1px solid #DDD9CF;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .ml-header {
+      height: 40px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      border-bottom: 1px solid #E5E1D6;
+      background: #FEFDF9;
+      z-index: 3;
+    }
+    .ml-header-title {
+      font-size: 16px; font-weight: 500; color: #232018;
+      letter-spacing: -0.01em;
+    }
+    .ml-header-icons { display: flex; gap: 16px; align-items: center; }
+    .ml-icon { width: 24px; height: 24px; cursor: pointer; opacity: 0.7; }
+    .ml-icon:hover { opacity: 1; }
+    .ml-scroll {
+      flex: 1;
+      overflow-y: auto;
+      background: #F3F0E9;
+    }
+    .ml-scroll::-webkit-scrollbar { width: 4px; }
+    .ml-scroll::-webkit-scrollbar-thumb { background: #D5D1C9; border-radius: 2px; }
+
+    /* plate row (top-level grouping row) */
+    .ml-plate-row {
+      height: 40px;
+      flex-shrink: 0;
+      background: #FEFDF9;
+      border-bottom: 1px solid #E5E1D6;
+      display: flex;
+      align-items: center;
+      padding: 0 16px 0 8px;
+      gap: 8px;
+    }
+    .ml-checkbox {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      background: #FEFDF9;
+      border: 1.5px solid #D5D1C9;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ml-chevron {
+      width: 12px; height: 26px;
+      background: #FEFDF9;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .ml-chevron svg { transition: transform 0.2s ease; }
+    .ml-plate-row.collapsed .ml-chevron svg { transform: rotate(-90deg); }
+    .ml-item-row { transition: opacity 0.15s ease; }
+    .ml-item-row.collapsed { display: none; }
+    .ml-badge {
+      flex: 1;
+      height: 26px;
+      background: #FEFDF9;
+      border: 1px solid #E5E1D6;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 4px;
+      min-width: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .ml-badge:hover { background: #F5F4FF; border-color: #C8CAED; }
+    .ml-finish { cursor: pointer; user-select: none; }
+    .ml-badge-swatch {
+      width: 18px; height: 18px;
+      background: #8F8F8F;
+      border: 1px solid #E5E1D6;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .ml-badge-name {
+      flex: 1; min-width: 0;
+      font-size: 14px; font-weight: 500; color: #232018;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ml-badge-chevron { position: relative; width: 24px; height: 24px; flex-shrink: 0; opacity: 0.5; }
+    .ml-badge-chevron img { position: absolute; width: 9.5px; height: 5.5px; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: none; display: block; }
+    .ml-finish-chevron { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+    .ml-finish-chevron img { position: absolute; width: 9.5px; height: 5.5px; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: none; display: block; }
+    .ml-badge-group {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+    .ml-sep { width: 8px; height: 1px; background: #E5E1D6; flex-shrink: 0; }
+    .ml-finish {
+      height: 26px;
+      background: #FEFDF9;
+      border: 1px solid #E5E1D6;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 2px 0 8px;
+      flex-shrink: 0;
+    }
+    #ml-finish-icon { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+    .ml-finish.mixed { padding: 0 2px 0 6px; }
+    .ml-finish.mixed #ml-finish-icon { display: none; }
+    .ml-finish-text {
+      font-size: 14px; font-weight: 500; color: #232018;
+      letter-spacing: -0.01em;
+    }
+    .ml-plus-btn {
+      width: 26px; height: 26px;
+      background: #FEFDF9;
+      border: 1px solid #E5E1D6;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    /* model item rows */
+    /* model item row — default = unselected */
+    .ml-item-row {
+      background: #F3F0E9;
+      display: flex;
+      align-items: stretch;
+      padding-left: 28px;
+      gap: 8px;
+      min-height: 71px;
+      cursor: pointer;
+    }
+    .ml-item-row:hover { background: #F5F4FF; }
+    .ml-item-row.selected { background: #ECEDFF; }
+    .ml-item-row.selected:hover { background: #E8EAFF; }
+    /* ending item: full-width bottom border to close the group; its body gets no inner divider */
+    .ml-item-row.ending { border-bottom: 1px solid #E5E1D6; }
+    .ml-item-row.ending.selected { border-bottom-color: #D0D2F2; }
+    .ml-item-row.ending .ml-item-body { border-bottom: none !important; }
+    /* hide bottom tree line on ending item */
+    .ml-item-row.ending .ml-item-lines .ml-item-line:last-child { opacity: 0; }
+    .ml-item-tree {
+      width: 44px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 1px;
+      align-self: stretch;
+    }
+    .ml-item-lines {
+      width: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      align-self: stretch;
+    }
+    .ml-item-line { flex: 1; width: 1px; background: #D5D1C9; }
+    .ml-item-row.selected .ml-item-line { background: #D0D2F2; }
+    .ml-item-checkbox {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      background: #FEFDF9;
+      border: 1.5px solid #D5D1C9;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ml-item-checkbox-check { display: none; }
+    .ml-item-row.selected .ml-item-checkbox {
+      background: #391ED4;
+      border-color: #391ED4;
+    }
+    .ml-item-row.selected .ml-item-checkbox-check { display: block; }
+    .ml-item-horiz { flex: 1; height: 1px; background: #D5D1C9; align-self: center; }
+    .ml-item-row.selected .ml-item-horiz { background: #D0D2F2; }
+    .ml-item-icon {
+      position: relative;
+      width: 20px; height: 20px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: #391ED4;
+    }
+    .ml-item-icon svg { width: 16px; height: 16px; }
+    .ml-item-row:not(.in-view) .ml-item-icon { display: none; }
+    .ml-item-body {
+      flex: 1;
+      min-width: 0;
+      border-bottom: 1px solid #E5E1D6;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 8px 0;
+    }
+    .ml-item-top, .ml-item-bottom { padding-right: 16px; }
+    .ml-item-row.selected .ml-item-body { border-bottom-color: #D0D2F2; }
+    .ml-item-row:last-child .ml-item-body { border-bottom: none; }
+    .ml-item-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ml-item-name {
+      flex: 1; min-width: 0;
+      font-size: 14px; color: #232018;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .ml-item-tags { display: flex; gap: 4px; flex-shrink: 0; }
+    .ml-item-tag {
+      height: 20px; padding: 0 4px;
+      border: 1px solid #DDD9CF;
+      border-radius: 4px;
+      font-size: 12px; font-weight: 600; color: #666259;
+      display: flex; align-items: center; justify-content: center;
+      min-width: 40px;
+    }
+    .ml-item-tag.stl { min-width: 24px; }
+    .ml-item-row.selected .ml-item-tag { border-color: #D0D2F2; }
+    .ml-item-bottom {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ml-finish-tag {
+      height: 26px;
+      border: 1px solid #E5E1D6;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 2px 0 4px;
+      flex-shrink: 0;
+      min-width: 94px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .ml-finish-tag:hover { background: #F5F4FF; }
+    .ml-item-row.selected .ml-finish-tag { border-color: #D0D2F2; }
+    .ml-finish-tag-icon { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+    /* Plate row dropdowns */
+    .ml-dropdown-panel {
+      position: fixed;
+      z-index: 2000;
+      background: #FEFDF9;
+      border: 1px solid #DDD9CF;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+      min-width: 220px;
+      max-height: 320px;
+      overflow-y: auto;
+      display: none;
+    }
+    .ml-dropdown-panel.open { display: block; }
+    .ml-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #232018;
+    }
+    .ml-dropdown-item:hover { background: #F5F4FF; }
+    .ml-dropdown-item.active { background: #ECEDFF; }
+    .ml-dropdown-swatch {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .ml-dropdown-finish-icon {
+      position: relative; width: 20px; height: 20px;
+      flex-shrink: 0;
+    }
+    .ml-item-row.dragging { opacity: 0.4; }
+    .ml-drag-ghost { position: absolute; top: -1000px; left: -1000px; border-radius: 8px; overflow: hidden; pointer-events: none; }
+    .mat-drag-ghost { position: absolute; top: -1000px; left: -1000px; border-radius: 8px; overflow: hidden; pointer-events: none; }
+    .mat-card.dragging { opacity: 0.4; }
+    .ml-item-row.drop-mat { background: #ECEDFF; box-shadow: inset 0 0 0 2px #391ED4; border-radius: 4px; }
+    .ml-plate-row.drop-mat { box-shadow: inset 0 0 0 2px #391ED4; }
+    .ml-item-row.drop-before { box-shadow: inset 0 2px 0 0 #391ED4; }
+    .ml-item-row.drop-after  { box-shadow: inset 0 -2px 0 0 #391ED4; }
+    .ml-plate-row.drop-into  { box-shadow: inset 0 -2px 0 0 #391ED4; }
+    .ml-dropdown-item-price { margin-left: auto; color: #8A8680; font-size: 12px; }
+    .ml-finish-tag-name { font-size: 12px; color: #232018; white-space: nowrap; }
+    .ml-finish-tag-price { font-size: 12px; color: #666259; flex: 1; text-align: right; }
+    .ml-item-price-row {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .ml-item-price {
+      font-size: 14px; color: #232018; white-space: nowrap;
+    }
+    .ml-qty {
+      height: 22px;
+      background: #FEFDF9;
+      border: 1px solid #E5E1D6;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .ml-item-row.selected .ml-qty { border-color: #D0D2F2; }
+    .ml-qty-val {
+      width: 32px;
+      font-size: 12px; color: #232018;
+      text-align: center;
+    }
+    .ml-qty-arrows {
+      width: 14px; height: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    .ml-qty-arrow {
+      width: 6px; height: 3px;
+      border-left: 3px solid transparent;
+      border-right: 3px solid transparent;
+    }
+    .ml-qty-arrow.up { border-bottom: 3px solid #666259; }
+    .ml-qty-arrow.down { border-top: 3px solid #666259; }
+
+    /* bottom bar of model list */
+    .ml-bar {
+      height: 48px;
+      flex-shrink: 0;
+      background: #FEFDF9;
+      border-top: 1px solid #E5E1D6;
+      border-radius: 0 0 8px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      z-index: 1;
+    }
+    .ml-selection-badge {
+      height: 26px;
+      background: #ECEDFF;
+      border: 1px solid #D0D2F2;
+      border-radius: 6px;
+      padding: 0 8px;
+      display: flex; align-items: center;
+      font-size: 14px; font-weight: 500; color: #391ED4;
+      letter-spacing: -0.01em;
+    }
+    .ml-bar-actions { display: flex; align-items: center; gap: 8px; }
+    .ml-shortcut-hint {
+      font-size: 12px; color: #908C83;
+      letter-spacing: -0.01em;
+    }
+    .ml-action-btn {
+      width: 26px; height: 26px;
+      background: #FEFDF9;
+      border: 1px solid #E5E1D6;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+    .ml-action-btn:hover { opacity: 1; }
+    .ml-action-btn-icon { position: relative; width: 16px; height: 16px; flex-shrink: 0; }
+    .ml-action-btn-icon-inner { position: absolute; inset: 9.38%; }
+    .ml-action-btn-icon.trash .ml-action-btn-icon-inner { inset: 9.38% 15.63%; }
+    .ml-action-btn-icon-inner img { position: absolute; inset: 0; display: block; max-width: none; width: 100%; height: 100%; }
+
+    /* ─── BOTTOM NAVIGATION ────────────────────────────────────── */
+    .bottom-nav {
+      background: #1A1918;
+      height: 64px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      border-top: 1px solid #2A2928;
+      border-left: 1px solid #2A2928;
+      border-right: 1px solid #2A2928;
+      border-radius: 16px 16px 0 0;
+      position: relative;
+    }
+    /* left: logo + divider + chevron */
+    .nav-logo-group { display: flex; align-items: center; gap: 8px; }
+    .nav-logo-inner { display: flex; align-items: center; gap: 4px; }
+    .nav-favicon { width: 36px; height: 36px; flex-shrink: 0; display: block; }
+    .nav-wordmark {
+      display: flex; flex-direction: column; gap: 2px;
+      font-family: 'Midnight Sans RD Pro', 'Midnight Sans', sans-serif;
+      font-size: 12px; font-weight: 600; color: #fff;
+      text-transform: uppercase; line-height: 1; letter-spacing: 0.02em;
+      width: 46px;
+    }
+    .nav-divider-v {
+      width: 1px; height: 24px;
+      background: #2A2928;
+      flex-shrink: 0;
+    }
+    /* chevron: Figma renders this as a 24px icon with a small 5.5×9.5px caret inside */
+    .nav-chevron {
+      width: 24px; height: 24px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-chevron svg { width: 10px; height: 6px; }
+
+    /* center: price cards */
+    .nav-center {
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      bottom: 8px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4px;
+      align-items: stretch;
+    }
+    .nav-price-card {
+      background: #232221;
+      border: 1px solid #2A2928;
+      border-radius: 4px;
+      padding: 4px 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0;
+      white-space: nowrap;
+    }
+    .nav-price-label {
+      font-size: 12px; color: #B7B4AF; line-height: 1.5;
+    }
+    .nav-price-value {
+      font-size: 16px; font-weight: 500; color: #F1EEE7; line-height: 1.5;
+    }
+    .nav-price-value.green { color: #BFF2B8; }
+    .nav-price-value.accent { color: #CACCFF; }
+    .nav-price-value.total { font-size: 20px; line-height: 1.2; letter-spacing: -0.04em; }
+    .nav-price-label-row { display: flex; align-items: center; gap: 8px; }
+    .nav-price-label-row .info-icon { width: 14px; height: 14px; flex-shrink: 0; opacity: 0.6; }
+    .nav-delivery-val { display: flex; align-items: center; gap: 4px; }
+    .nav-delivery-bolt { width: 10px; height: 16px; flex-shrink: 0; display: block; }
+
+    /* right: icons + CTA */
+    .nav-right { display: flex; align-items: center; gap: 24px; }
+    .nav-icons { display: flex; align-items: center; gap: 8px; }
+    .nav-icon-btn {
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .nav-icon-btn > img { width: 24px; height: 24px; display: block; }
+    /* profile icon — vector positioned within 24px container via inset, matching Figma */
+    .nav-user-icon { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+    .nav-user-icon-inner { position: absolute; top: 13.54%; right: 18.16%; bottom: 13.58%; left: 17.74%; }
+    .nav-user-icon-inner img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; display: block; }
+    /* gear icon — inset: 9.24% 8.5% 9.5% 8.52% */
+    .nav-gear-icon { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+    .nav-gear-icon-inner { position: absolute; top: 9.24%; right: 8.5%; bottom: 9.5%; left: 8.52%; }
+    .nav-gear-icon-inner img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; display: block; }
+    /* cart: Button V1 is absolutely offset -1px/+1px per Figma */
+    .nav-cart-btn { position: absolute; left: -1px; top: 1px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 6px; cursor: pointer; }
+    /* cart icon vector — inset: 11.98% 15.1% 13.54% 10.93% */
+    .nav-cart-icon { position: relative; width: 24px; height: 24px; flex-shrink: 0; }
+    .nav-cart-icon-inner { position: absolute; top: 11.98%; right: 15.1%; bottom: 13.54%; left: 10.93%; }
+    .nav-cart-icon-inner img { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; display: block; }
+    /* cart badge */
+    .nav-cart-wrap {
+      position: relative;
+      width: 26px; height: 26px;
+      flex-shrink: 0;
+      cursor: pointer;
+      overflow: visible;
+    }
+    .nav-cart-badge {
+      position: absolute;
+      left: 14px; top: -2px;
+      width: 16px; height: 16px;
+      display: block;
+      pointer-events: none;
+    }
+    .nav-cart-badge-num {
+      position: absolute;
+      left: 22px; top: 6px;
+      transform: translate(-50%, -50%);
+      font-size: 10px; font-weight: 700; color: #fff;
+      font-family: 'Supreme Variable', 'Supreme', sans-serif;
+      text-align: center;
+      width: 16px; height: 13px;
+      line-height: 13px;
+      pointer-events: none;
+    }
+    .nav-cta {
+      background: #5F63E6;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 9px 16px;
+      font-family: 'Midnight Sans RD Pro', 'Midnight Sans', sans-serif;
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { background: #4e52d4; }
+
+    /* ─── LAYOUT CONFIGURATOR POPUP ───────────────────────────── */
+    .layout-popup-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(35,32,24,0.35);
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .layout-popup-backdrop.open { display: flex; }
+    .layout-popup {
+      background: #FEFDF9;
+      border: 1px solid #DDD9CF;
+      border-radius: 16px;
+      width: 560px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .lp-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #E5E1D6;
+    }
+    .lp-title { font-size: 16px; font-weight: 600; color: #232018; letter-spacing: -0.01em; }
+    .lp-close {
+      width: 28px; height: 28px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; background: transparent; border: none;
+      color: #232018;
+    }
+    .lp-close:hover { background: #F3F0E9; }
+    .lp-body { padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+    .lp-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .lp-row-label { font-size: 13px; font-weight: 500; color: #232018; }
+    .lp-seg {
+      display: inline-flex; background: #F3F0E9; border: 1px solid #DDD9CF;
+      border-radius: 8px; padding: 2px;
+    }
+    .lp-seg-btn {
+      padding: 4px 14px; border-radius: 6px;
+      font-size: 12px; font-weight: 500; color: #868178;
+      cursor: pointer; background: transparent; border: none;
+      font-family: inherit;
+    }
+    .lp-seg-btn.active { background: #FEFDF9; color: #232018; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .lp-layouts { display: flex; gap: 12px; }
+    .lp-layout-card {
+      flex: 1; border: 2px solid #DDD9CF; border-radius: 12px;
+      padding: 12px; cursor: pointer; display: flex; flex-direction: column; gap: 10px;
+      background: #FEFDF9; transition: border-color 0.15s ease;
+    }
+    .lp-layout-card:hover { border-color: #868178; }
+    .lp-layout-card.active { border-color: #5055E0; background: #F5F6FE; }
+    .lp-layout-thumb {
+      height: 110px; border-radius: 8px;
+      background: #F3F0E9; display: flex; gap: 4px; padding: 6px;
+    }
+    .lp-thumb-box { background: #FEFDF9; border: 1px solid #DDD9CF; border-radius: 4px; flex: 1; }
+    .lp-thumb-col { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .lp-thumb-col .lp-thumb-box { flex: 1; }
+    .lp-layout-name { font-size: 13px; font-weight: 600; color: #232018; }
+    .lp-layout-desc { font-size: 11px; color: #868178; line-height: 1.4; }
+    .lp-footer {
+      padding: 12px 20px; border-top: 1px solid #E5E1D6;
+      font-size: 11px; color: #868178;
+    }
+
+    /* Model-focused layout */
+    .inner-frame.layout-model .material-panel { min-width: 320px; width: 360px; flex: 0 0 360px; }
+    .inner-frame.layout-model .right-panel { flex: 1 1 0; width: auto; min-width: 320px; }
+    .inner-frame.layout-model .viewport-module { flex: 1 1 0; height: auto !important; min-height: 0; width: auto; }
+    .inner-frame.layout-model .model-list-module { flex: 0 0 auto; width: 380px; min-width: 320px; border-radius: 12px; }
+    .inner-frame.layout-model .right-panel > .handle-bar { display: none; }
+
+    /* ─── FINISH SELECTOR POPUP ───────────────────────────────── */
+    .finish-popup-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 24px;
+      z-index: 1100;
+    }
+    .finish-popup-backdrop.open { display: flex; }
+    .finish-popup-shell {
+      background: rgba(254,253,249,0.1);
+      border: 1px solid rgba(229,225,214,0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 8px;
+      max-width: 1280px;
+      width: 100%;
+      max-height: 100%;
+      display: flex;
+    }
+    .finish-popup {
+      position: relative;
+      background: #FEFDF9;
+      border-radius: 24px;
+      width: 100%;
+      overflow: hidden;
+      display: flex;
+    }
+    .fp-text-container {
+      flex: 1 0 0;
+      min-width: 0;
+      padding: 40px 56px 40px 40px;
+      display: flex; flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      max-height: calc(100vh - 80px);
+    }
+    .fp-title {
+      font-size: 24px;
+      font-weight: 500;
+      color: #232018;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      margin: 0;
+    }
+    .fp-close {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 26px; height: 26px;
+      border-radius: 6px;
+      border: none;
+      background: #F3F0E9;
+      cursor: pointer;
+      color: #232018;
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 0;
+      z-index: 2;
+    }
+    .fp-close:hover { background: #E5E1D6; }
+    .fp-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .fp-card {
+      min-width: 260px;
+      border: 1px solid #E5E1D6;
+      border-radius: 16px;
+      background: #FEFDF9;
+      padding: 8px;
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      gap: 8px;
+      box-sizing: border-box;
+    }
+    .fp-card.active {
+      border: 2px solid #A2A6EE;
+      padding: 7px;
+    }
+    .fp-image {
+      position: relative;
+      height: 400px;
+      border: 1px solid #E5E1D6;
+      border-radius: 8px;
+      padding: 8px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    .fp-image-photo {
+      position: absolute;
+      display: block;
+      max-width: none;
+      pointer-events: none;
+    }
+    .fp-image-tint {
+      position: absolute; inset: 0;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      background: transparent;
+      transition: background 0.18s ease;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      -webkit-mask-mode: luminance;
+      mask-mode: luminance;
+    }
+    .fp-text {
+      padding: 8px;
+      display: flex; flex-direction: column;
+      gap: 8px;
+    }
+    .fp-name-row {
+      display: flex; align-items: center;
+      height: 24px;
+      gap: 8px;
+    }
+    .fp-name {
+      flex: 1 0 0;
+      min-width: 0;
+      font-size: 20px;
+      font-weight: 500;
+      color: #000;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+    }
+    .fp-price {
+      font-size: 16px;
+      font-weight: 600;
+      color: #232018;
+      line-height: 1.5;
+      white-space: nowrap;
+    }
+    .fp-desc {
+      font-size: 16px;
+      font-weight: 400;
+      color: #232018;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="inner-frame">
+
+      <!-- LEFT: Materials Panel -->
+      <div class="material-panel">
+        <div class="mat-header">
+          <span class="mat-header-title">Material &amp; Finish</span>
+          <div class="mat-header-icons">
+            <button class="mat-sort-btn">Sort By<div class="mat-sort-chevron"><img id="sort-chevron" src="" alt=""/></div></button>
+            <div class="mat-layout-group">
+              <div class="mat-layout-icon"><img id="layout-columns-icon" src="" alt=""/></div>
+              <div class="mat-layout-icon"><img id="layout-lines-icon" src="" alt=""/></div>
+            </div>
+          </div>
+        </div>
+        <div class="mat-filters">
+          <button class="filter-chip active" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="SLA">SLA</button>
+          <button class="filter-chip" data-filter="SLS">SLS</button>
+          <button class="filter-chip filter-chip-fastest" data-filter="fastest"><img id="fastest-bolt-icon" class="filter-bolt-icon" src="" alt=""/>Fastest</button>
+          <button class="filter-chip filter-chip-bookmarked" data-filter="bookmarked" id="filter-bookmarked" style="display:none; align-items:center; gap:4px;">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" style="display:block"><path d="M12.6997 14C12.6997 14.1747 12.6089 14.3371 12.4595 14.4277C12.3102 14.5183 12.1242 14.524 11.9693 14.4434L8.00443 12.3809L4.03047 14.444C3.87547 14.5244 3.68946 14.5178 3.54023 14.4271C3.3911 14.3364 3.3 14.1746 3.3 14V3.33333C3.3 2.32052 4.12052 1.5 5.13333 1.5H10.8664C11.8792 1.5 12.6997 2.32052 12.6997 3.33333V14Z"/></svg>
+            Bookmarked
+          </button>
+          <span class="mat-header-count" id="mat-count">29 materials</span>
+        </div>
+        <div class="mat-scroll">
+          <div class="mat-grid" id="mat-grid"></div>
+        </div>
+      </div>
+
+      <!-- VERTICAL HANDLE between panels -->
+      <div class="panel-handle" data-resize="next" data-min="400">
+        <div class="panel-handle-pill"></div>
+      </div>
+
+      <!-- RIGHT: 3-module column -->
+      <div class="right-panel">
+
+        <!-- 3D Viewport Module -->
+        <div class="viewport-module">
+          <div class="vp-object-group">
+            <div class="vp-model">
+              <div class="vp-shadow"></div>
+              <div class="vp-model-img-wrap">
+                <img src="https://www.figma.com/api/mcp/asset/0d10a3b1-e4a7-4d48-b4da-911acde9b248" alt="3D Model" />
+                <div class="vp-tint" id="vp-tint"></div>
+              </div>
+            </div>
+            <div class="vp-dim-asset vp-dim-line-125"><img src="https://www.figma.com/api/mcp/asset/d881fa38-2743-4e73-8cc2-4169f38d7187" alt=""/></div>
+            <div class="vp-dim-label vp-dim-label-125" data-mm="125">125mm</div>
+            <div class="vp-dim-asset vp-dim-line-190"><img src="https://www.figma.com/api/mcp/asset/f5b296c8-28d1-454a-8021-3b5cefd90141" alt=""/></div>
+            <div class="vp-dim-label vp-dim-label-190" data-mm="190">190mm</div>
+            <div class="vp-dim-asset vp-dim-line-110"><img src="https://www.figma.com/api/mcp/asset/f5cd1576-5b0c-400d-9df8-22be5f99d19b" alt=""/></div>
+            <div class="vp-dim-label vp-dim-label-110" data-mm="110">110mm</div>
+          </div>
+          <div class="vp-top-bar">
+            <div class="vp-info-pill">
+              <span id="vp-filename">Gear Spindle 1.STL</span>
+              <div class="vp-info-pill-sep"></div>
+              <span class="vp-info-pill-btn" id="vp-info-unit">mm</span>
+              <div class="vp-info-pill-sep"></div>
+              <div class="vp-info-pill-icon" title="Material">
+                <img src="https://www.figma.com/api/mcp/asset/14aeabfe-6f5e-4528-893f-9fb0396f472c" alt="" style="width:100%;height:100%;display:block"/>
+              </div>
+              <div class="vp-info-pill-sep"></div>
+              <div class="vp-info-pill-icon" title="Play">
+                <svg viewBox="0 0 10.8749 12.167" width="11" height="13" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 1.92523C5.88794e-05 0.437992 1.61824 -0.487759 2.89966 0.270687L9.93164 4.43011L10.0459 4.50262C11.1513 5.26045 11.1513 6.90669 10.0459 7.66449L9.93164 7.73699L2.89966 11.8964C1.61835 12.6546 0.000248861 11.7289 0 10.2419V1.92523ZM2.3269 1.23895C1.7969 0.925188 1.12506 1.30767 1.125 1.92523V10.2419C1.12525 10.8592 1.79701 11.2417 2.3269 10.9282L9.35889 6.76873L9.45044 6.70574C9.84941 6.39074 9.84936 5.7764 9.45044 5.46136L9.35889 5.39837L2.3269 1.23895Z" fill="#232018"/></svg>
+              </div>
+              <div class="vp-info-pill-sep"></div>
+              <div class="vp-info-pill-icon" title="More">
+                <svg viewBox="0 0 7.12492 4.12492" width="9" height="6" xmlns="http://www.w3.org/2000/svg"><path d="M6.16475 0.164752C6.38442 -0.0549174 6.74049 -0.0549175 6.96016 0.164752C7.17983 0.384422 7.17983 0.740493 6.96016 0.960163L3.96016 3.96016C3.74049 4.17983 3.38442 4.17983 3.16475 3.96016L0.164752 0.960163C-0.0549175 0.740493 -0.0549175 0.384422 0.164752 0.164752C0.384422 -0.0549175 0.740493 -0.0549175 0.960163 0.164752L3.56246 2.76705L6.16475 0.164752Z" fill="#000"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="vp-handle" title="Rotate / Pan">
+            <img src="https://www.figma.com/api/mcp/asset/0e177955-b43b-4422-a437-fd437fde8c21" alt="" style="width:18px;height:18px;display:block;transform:rotate(-90deg)"/>
+          </div>
+        </div>
+
+        <!-- HandleBar -->
+        <div class="handle-bar">
+          <div class="handle-bar-pill"></div>
+        </div>
+
+        <!-- Model List Module -->
+        <div class="model-list-module">
+          <div class="ml-header">
+            <span class="ml-header-title">Model List</span>
+            <div class="ml-header-icons">
+              <svg class="ml-icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#232018" stroke-width="1.5"/><path d="M16.5 16.5L21 21" stroke="#232018" stroke-width="1.5" stroke-linecap="round"/></svg>
+              <svg class="ml-icon" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#232018" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+          <div class="ml-scroll" id="ml-scroll"></div>
+          <div class="ml-bar">
+            <div class="ml-selection-badge">4 in Selection</div>
+            <div class="ml-bar-actions">
+              <span class="ml-shortcut-hint">Use Shortcuts ⌘</span>
+              <div class="ml-action-btn">
+                <div class="ml-action-btn-icon"><div class="ml-action-btn-icon-inner"><img id="icon-crop" src="" alt=""/></div></div>
+              </div>
+              <div class="ml-action-btn">
+                <div class="ml-action-btn-icon"><div class="ml-action-btn-icon-inner"><img id="icon-copy" src="" alt=""/></div></div>
+              </div>
+              <div class="ml-action-btn" id="ml-action-delete" style="cursor:pointer" title="Delete selected">
+                <div class="ml-action-btn-icon trash"><div class="ml-action-btn-icon-inner"><img id="icon-trash" src="" alt=""/></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BOTTOM NAVIGATION -->
+  <div class="bottom-nav">
+    <!-- Left: Logo -->
+    <div class="nav-logo-group">
+      <div class="nav-logo-inner">
+        <img class="nav-favicon" src="https://www.figma.com/api/mcp/asset/8a5ca1ff-82af-41b8-92a3-8fae44f3de81" alt="Form Now" />
+        <div class="nav-wordmark">
+          <span>Form</span>
+          <span>NOW</span>
+        </div>
+      </div>
+      <div class="nav-divider-v"></div>
+      <div class="nav-chevron"><svg viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L5 5L9 1" stroke="#B7B4AF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </div>
+
+    <!-- Center: Price breakdown cards -->
+    <div class="nav-center">
+      <div class="nav-price-card">
+        <span class="nav-price-label">Materials</span>
+        <span class="nav-price-value">$197.57</span>
+      </div>
+      <div class="nav-price-card">
+        <span class="nav-price-label">Finishes</span>
+        <span class="nav-price-value">$30.00</span>
+      </div>
+      <div class="nav-price-card">
+        <div class="nav-price-label-row">
+          <span class="nav-price-label">Volume Discount</span>
+          <img class="info-icon" src="https://www.figma.com/api/mcp/asset/5b33c37c-1939-4ffb-8adc-398d7fa7cbbd" alt="" />
+        </div>
+        <span class="nav-price-value green">-$10.00</span>
+      </div>
+      <div class="nav-price-card">
+        <div class="nav-price-label-row">
+          <span class="nav-price-label">Delivery Speed</span>
+          <img class="info-icon" src="https://www.figma.com/api/mcp/asset/5b33c37c-1939-4ffb-8adc-398d7fa7cbbd" alt="" />
+        </div>
+        <div class="nav-delivery-val">
+          <img class="nav-delivery-bolt" src="https://www.figma.com/api/mcp/asset/af9fdd37-c303-423a-ba9c-f6a761297e69" alt="" />
+          <span class="nav-price-value accent" style="font-size:14px;">As Soon as March 20</span>
+        </div>
+      </div>
+      <div class="nav-price-card">
+        <span class="nav-price-label">Total</span>
+        <span class="nav-price-value total">$227.57</span>
+      </div>
+    </div>
+
+    <!-- Right: Icons + CTA -->
+    <div class="nav-right">
+      <div class="nav-icons">
+        <div class="nav-icon-btn" id="nav-gear-btn" style="cursor:pointer">
+          <div class="nav-gear-icon">
+            <div class="nav-gear-icon-inner">
+              <img src="https://www.figma.com/api/mcp/asset/f2755f10-e987-42e5-abaa-db4c828b594b" alt="" />
+            </div>
+          </div>
+        </div>
+        <div class="nav-icon-btn">
+          <div class="nav-user-icon">
+            <div class="nav-user-icon-inner">
+              <img src="https://www.figma.com/api/mcp/asset/a88dd0c8-f6a4-4b21-87d7-6802bfd9450f" alt="" />
+            </div>
+          </div>
+        </div>
+        <div class="nav-cart-wrap">
+          <div class="nav-cart-btn">
+            <div class="nav-cart-icon">
+              <div class="nav-cart-icon-inner">
+                <img src="https://www.figma.com/api/mcp/asset/d7df063d-2f97-45dd-9392-cef0c2f8b61a" alt="" />
+              </div>
+            </div>
+          </div>
+          <img class="nav-cart-badge" src="https://www.figma.com/api/mcp/asset/c873ee33-97ca-4fbb-b025-ab5705f320ac" alt="" />
+          <span class="nav-cart-badge-num">13</span>
+        </div>
+      </div>
+      <button class="nav-cta">Add to Cart</button>
+    </div>
+  </div>
+
+<script>
+let currentUnit = 'mm';
+let layoutMode = 'material';
+// Figma icon assets
+const DELIVERY_BOLT   = 'https://www.figma.com/api/mcp/asset/1092cd30-6f51-4639-9fa7-c2e2c3d1cc1d';
+const BOOKMARK_ICON   = 'https://www.figma.com/api/mcp/asset/3252033e-c788-41ce-80a6-2fbfbd71cf9a';
+const CHEVRON_DOWN    = 'https://www.figma.com/api/mcp/asset/3da79607-4649-4cae-8db1-fa8cc4dd542b';
+// Supports icons — two visual variants from Figma
+// Type A (inner-a): used for "Attached" — wider shape (17×12.5)
+const ICON_ATTACHED   = 'https://www.figma.com/api/mcp/asset/6d42ac63-bd72-4931-a900-d8a49effe3ee';
+// Type B (inner-b): used for "Sanded" and "Standard" — squarer shape (15×13.3)
+const ICON_SANDED     = 'https://www.figma.com/api/mcp/asset/e7ff9241-647e-44d6-9839-8e1aca2bd0e4';
+const ICON_STANDARD   = 'https://www.figma.com/api/mcp/asset/898b7d5a-1d2f-4f97-bad5-7ba2689dbafe';
+const SORT_CHEVRON    = 'https://www.figma.com/api/mcp/asset/0a683cd8-4bd1-47b5-988c-a36147b89d93';
+const LAYOUT_COLUMNS  = 'https://www.figma.com/api/mcp/asset/3bd5b900-ebd3-4537-8fa6-6b71fc0d9502';
+const LAYOUT_LINES    = 'https://www.figma.com/api/mcp/asset/b61cce7d-fe50-4253-8fab-429204a06aca';
+const SEP_LINE        = 'https://www.figma.com/api/mcp/asset/275c1bed-75f0-42ad-a8e8-a7e7a38a3b11';
+const ICON_CROP       = 'https://www.figma.com/api/mcp/asset/ddb0cff3-dfe1-48b7-876d-5261836a9f54';
+const ICON_COPYPASTE  = 'https://www.figma.com/api/mcp/asset/c6e773f3-b3b7-4983-95cb-d3fc1541cefa';
+const ICON_TRASH      = 'https://www.figma.com/api/mcp/asset/7f8ed841-f6cb-4d54-82be-2fa2ec72a196';
+const ICON_REMOVED      = 'https://www.figma.com/api/mcp/asset/08e7adc4-6dd8-4f73-9de5-25e955cb956d';
+const ICON_REMOVED_DOT1 = 'https://www.figma.com/api/mcp/asset/45a30548-23e0-4911-a86e-9d37914674b4';
+const ICON_REMOVED_DOT2 = 'https://www.figma.com/api/mcp/asset/4402d75d-4741-4657-b5eb-a3eef39dfcf5';
+
+function supportsIconHTML(type) {
+  if (type === 'attached') {
+    return `<div class="info-tag-icon"><div class="info-tag-icon-inner-a"><img src="${ICON_ATTACHED}" alt=""/></div></div>`;
+  } else if (type === 'sanded') {
+    return `<div class="info-tag-icon"><div class="info-tag-icon-inner-b"><img src="${ICON_SANDED}" alt=""/></div></div>`;
+  } else {
+    return `<div class="info-tag-icon"><div class="info-tag-icon-inner-b"><img src="${ICON_STANDARD}" alt=""/></div></div>`;
+  }
+}
+
+const MATERIALS = [
+  // SLA — Standard Resins
+  { id:1,  name:'Grey Resin V5',            price:43.22, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'attached', finishLabel:'Attached - $0', swatch:'#8F8D88', img:'https://www.figma.com/api/mcp/asset/db6c2f20-bdf1-4eec-a954-a8c02e8b232c' },
+  { id:2,  name:'White Resin V5',           price:43.22, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#FFFFFF', img:'https://www.figma.com/api/mcp/asset/99afe0a1-2469-4aca-9cbf-d3cfba36eaf6' },
+  { id:3,  name:'Black Resin V5',           price:43.22, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#2C2B28', img:'https://www.figma.com/api/mcp/asset/e40d6b1e-c680-4d57-9c21-00fa4b8d654f' },
+  { id:4,  name:'Precision Resin',          price:43.22, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#C9B896', img:'https://www.figma.com/api/mcp/asset/9203b978-c8d3-4e38-b2a4-b24c877854c7' },
+  // SLA — Colour Resins
+  { id:5,  name:'Signal Red Resin V5',      price:86.50, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#BF3030', img:'https://www.figma.com/api/mcp/asset/1ae2fce4-c1e3-46a5-ba9c-ee2209a35be4' },
+  { id:6,  name:'Formlabs Orange Resin V5', price:86.50, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#D4621A', img:'https://www.figma.com/api/mcp/asset/1157e9d7-a3b6-4ab2-8044-7a9b5b654e6c' },
+  { id:7,  name:'Cadmium Yellow Resin V5',  price:86.50, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#D4B020', img:'https://www.figma.com/api/mcp/asset/9d091f11-5284-46a8-83a9-39f1a670ed02' },
+  { id:8,  name:'Kelly Green Resin V5',     price:86.50, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#2A8C4A', img:'https://www.figma.com/api/mcp/asset/ff928420-4a62-4874-bd33-aaf13d9f5f45' },
+  { id:9,  name:'Cobalt Blue Resin V5',     price:86.50, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#2460A0', img:'https://www.figma.com/api/mcp/asset/9943960b-3386-4726-97eb-84473d736473' },
+  { id:10, name:'Royal Purple Resin V5',    price:86.50, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#7040A0', img:'https://www.figma.com/api/mcp/asset/74990f0c-02d1-475e-b35b-cc874dfcd890' },
+  { id:11, name:'Berry Pink Resin V5',      price:86.50, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#C0408A', img:'https://www.figma.com/api/mcp/asset/65f924cb-cd7a-4869-bfcd-7d398e0b0d56' },
+  // SLA — Engineering Resins
+  { id:12, name:'Tough 1000 Resin',         price:43.22, tech:'SLA', tag:'New', delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#3A3A3A', img:'https://www.figma.com/api/mcp/asset/5b20f39a-6520-4cfc-9cab-cb346c3a3eca' },
+  { id:13, name:'Tough 1500 Resin',         price:42.50, tech:'SLA', tag:'New', delivery:null,               finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#3A3A3A', img:'https://www.figma.com/api/mcp/asset/5b20f39a-6520-4cfc-9cab-cb346c3a3eca' },
+  { id:14, name:'Tough 2000 Resin',         price:48.50, tech:'SLA', tag:'New', delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#3A3A3A', img:'https://www.figma.com/api/mcp/asset/5b20f39a-6520-4cfc-9cab-cb346c3a3eca' },
+  { id:15, name:'Durable Resin',            price:45.66, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#9A9790', img:'https://www.figma.com/api/mcp/asset/3feb0d04-1376-44fe-ab65-d09b48180a5e' },
+  { id:16, name:'Flexible 80A Resin',       price:45.66, tech:'SLA', tag:null,  delivery:null,               finish:'attached', finishLabel:'Attached - $0', swatch:'#D0CCC4', img:'https://www.figma.com/api/mcp/asset/3feb0d04-1376-44fe-ab65-d09b48180a5e' },
+  { id:17, name:'Elastic 50A Resin',        price:43.55, tech:'SLA', tag:null,  delivery:null,               finish:'attached', finishLabel:'Attached - $0', swatch:'#C8C5BC', img:'https://www.figma.com/api/mcp/asset/3feb0d04-1376-44fe-ab65-d09b48180a5e' },
+  { id:18, name:'High Temp Resin',          price:43.22, tech:'SLA', tag:null,  delivery:null,               finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#D9B96A', img:'https://www.figma.com/api/mcp/asset/96293e35-bd7b-4d2c-baff-a0fa860b1eb4' },
+  { id:19, name:'Flame Retardant Resin',    price:39.33, tech:'SLA', tag:null,  delivery:null,               finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#787470', img:'https://www.figma.com/api/mcp/asset/a0b4da81-82b4-4f1e-9e9e-69eb6d57851c' },
+  { id:20, name:'ESD Resin',                price:39.33, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#000000', img:'https://www.figma.com/api/mcp/asset/f8d33541-9780-40cc-afb9-e327c1f29dfa' },
+  { id:21, name:'Clear Resin',              price:43.22, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#B4D0D4', img:'https://www.figma.com/api/mcp/asset/61bfe50d-814b-45b4-9bab-351fc055254e' },
+  { id:22, name:'Rigid 4000 Resin',         price:42.33, tech:'SLA', tag:null,  delivery:'As Soon As 04/24', finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#FFFFFF', img:'https://www.figma.com/api/mcp/asset/4ca8d93c-629e-41c8-9bb3-40f0a0278808' },
+  { id:23, name:'Rigid 10K Resin',          price:42.33, tech:'SLA', tag:null,  delivery:null,               finish:'sanded',   finishLabel:'Sanded - $5',   swatch:'#FFFFFF', img:'https://www.figma.com/api/mcp/asset/4e434e9f-efef-41d0-9450-5e75eb44dfb7' },
+  // SLS — Powder Materials
+  { id:24, name:'Fused Nylon 12 Powder',    price:43.22, tech:'SLS', tag:null,  delivery:null,               finish:'standard', finishLabel:'Standard - $0', swatch:'#000000', img:'https://www.figma.com/api/mcp/asset/9994bc7d-da26-4aab-a773-35ca62842c5d' },
+  { id:25, name:'Nylon 12 White Powder',    price:43.22, tech:'SLS', tag:null,  delivery:null,               finish:'standard', finishLabel:'Standard - $0', swatch:'#FFFFFF', img:'https://www.figma.com/api/mcp/asset/97c0bb55-d543-45eb-803e-eaf6deae59f4' },
+  { id:26, name:'Fused Nylon 11 Powder',    price:54.48, tech:'SLS', tag:null,  delivery:null,               finish:'standard', finishLabel:'Standard - $0', swatch:'#000000', img:'https://www.figma.com/api/mcp/asset/797a30b4-d63b-46e3-b604-468e463d706b' },
+  { id:27, name:'Glass Filled Nylon 12',    price:44.48, tech:'SLS', tag:null,  delivery:null,               finish:'standard', finishLabel:'Standard - $0', swatch:'#989490', img:'https://www.figma.com/api/mcp/asset/a7ee1e29-91a9-43c3-a778-3c7e16bd4226' },
+  { id:28, name:'Nylon 12 Tough Powder',    price:47.48, tech:'SLS', tag:null,  delivery:null,               finish:'standard', finishLabel:'Standard - $0', swatch:'#2A2A2A', img:'https://www.figma.com/api/mcp/asset/0f3ed057-0967-4cd4-8832-d8667e3054a9' },
+  { id:29, name:'Fused TPU 90A Powder',     price:65.48, tech:'SLS', tag:null,  delivery:null,               finish:'standard', finishLabel:'Standard - $0', swatch:'#000000', img:'https://www.figma.com/api/mcp/asset/bf1df4e2-49ab-457a-82a2-db42394503ad' },
+];
+
+let selectedId = null;
+let activeFilter = 'all';
+const bookmarkedMats = new Set([1]);
+const BOOKMARK_FILLED_SVG = '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%;display:block"><path d="M12.6997 14C12.6997 14.1747 12.6089 14.3371 12.4595 14.4277C12.3102 14.5183 12.1242 14.524 11.9693 14.4434L8.00443 12.3809L4.03047 14.444C3.87547 14.5244 3.68946 14.5178 3.54023 14.4271C3.3911 14.3364 3.3 14.1746 3.3 14V3.33333C3.3 2.32052 4.12052 1.5 5.13333 1.5H10.8664C11.8792 1.5 12.6997 2.32052 12.6997 3.33333V14Z" fill="#232018"/></svg>';
+const cardFinishes = {};
+
+const ITEMS = [
+  { id:'1', name:'Gear Spindle_Scaled_Longname 1', selected:true, inView:true,  finish:'attached', price:'$24.89', qty:1 },
+  { id:'2', name:'Gear Spindle_Scaled_Longname 2', selected:true, inView:false, finish:'attached', price:'$24.89', qty:1 },
+  { id:'3', name:'Gear Spindle_Scaled_Longname 3', selected:true, inView:false, finish:'attached', price:'$24.89', qty:1 },
+  { id:'4', name:'Gear Spindle_Scaled_Longname 4', selected:true, inView:false, finish:'attached', price:'$24.89', qty:1 },
+];
+let GROUPS = [{ id:'g1', materialId:1, itemIds:['1','2','3','4'] }];
+let nextGroupId = 2;
+
+function getItem(id) { return ITEMS.find(i => i.id === id); }
+function getGroup(id) { return GROUPS.find(g => g.id === id); }
+function groupOfItem(itemId) { return GROUPS.find(g => g.itemIds.includes(itemId)); }
+function activeGroup() {
+  const inView = ITEMS.find(i => i.inView);
+  if (inView) return groupOfItem(inView.id);
+  return GROUPS[0];
+}
+
+function finishFullLabel(finish, mat) {
+  const opt = getFinishOptions(mat).find(o => o.value === finish);
+  return opt ? `${opt.label} - ${opt.price}` : finish;
+}
+
+const FINISH_META = {
+  attached: {
+    title: 'Supports Attached',
+    desc:  'Parts are fully washed and cured, but support structures remain attached to the model. This is the fastest and most economical option.',
+    image: 'https://www.figma.com/api/mcp/asset/38cf12b1-eb59-4eef-9737-9d720d1c9bd5',
+    imgPos: { w: 234.78, h: 144.07, l: -78.8, t: -34.48 },
+  },
+  removed: {
+    title: 'Supports Removed',
+    desc:  'Support structures are removed from the part. No additional finishing or sanding is performed (ideal if you want to finish parts yourself)',
+    image: 'https://www.figma.com/api/mcp/asset/92cef235-cf3a-43e2-93c0-6d13d00c811c',
+    imgPos: { w: 266.3, h: 163.41, l: -105.7, t: -45.13 },
+  },
+  sanded: {
+    title: 'Sanded Finish',
+    desc:  'Support structures are removed from the part. Any marks left on the parts are lightly sanded down with 320 grit sandpaper.',
+    image: 'https://www.figma.com/api/mcp/asset/abdbd7c8-aae2-4955-b7d1-c2136fba93f0',
+    imgPos: { w: 264.13, h: 162.08, l: -105.41, t: -47.39 },
+  },
+  standard: {
+    title: 'SLS Standard',
+    desc:  'Extra smooth finish for detailed models.',
+    image: 'https://www.figma.com/api/mcp/asset/abdbd7c8-aae2-4955-b7d1-c2136fba93f0',
+    imgPos: { w: 264.13, h: 162.08, l: -105.41, t: -47.39 },
+  },
+};
+
+function getFinishOptions(mat) {
+  if (!mat || mat.tech === 'SLS') return [
+    { value: 'standard', label: 'Standard', price: '$0' }
+  ];
+  if (mat.id === 16 || mat.id === 17) return [
+    { value: 'attached', label: 'Attached', price: '$0' }
+  ];
+  return [
+    { value: 'attached', label: 'Attached', price: '$0' },
+    { value: 'removed',  label: 'Removed',  price: '$3' },
+    { value: 'sanded',   label: 'Sanded',   price: '$5' },
+  ];
+}
+
+function formatPrice(p) {
+  return '$' + p.toFixed(2);
+}
+
+function renderCard(mat) {
+  const card = document.createElement('div');
+  card.className = 'mat-card';
+  card.dataset.id = mat.id;
+
+  card.innerHTML = `
+    <div class="card-bookmark${bookmarkedMats.has(mat.id) ? ' bookmarked' : ''}" onclick="toggleBookmark(event, ${mat.id})">${bookmarkedMats.has(mat.id) ? BOOKMARK_FILLED_SVG : `<div class="card-bookmark-inner"><img src="${BOOKMARK_ICON}" alt=""/></div>`}</div>
+    <div class="card-img-frame">
+      <img class="card-thumb" src="${mat.img}" alt="${mat.name}" loading="lazy" />
+    </div>
+    <div class="card-tag-wrap">
+      <span class="tech-tag ${mat.tech.toLowerCase()}">${mat.tech}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-new-row">${mat.tag === 'New' ? '<span class="badge-new">New</span>' : ''}</div>
+      <div class="card-name">${mat.name}</div>
+      <div class="card-price">${formatPrice(mat.price)}</div>
+      <div class="card-delivery-row">${mat.delivery ? `<div class="card-delivery-tag"><img class="delivery-icon" src="${DELIVERY_BOLT}" alt=""/><span class="delivery-text">${mat.delivery}</span></div>` : ''}</div>
+    </div>
+    <div class="card-extras">
+      <div class="info-tag" onclick="openCardFinishDropdown(event, this, ${mat.id})">
+        <div class="info-tag-icon" data-finish-icon>${finishIconHTML(cardFinishes[mat.id] || mat.finish)}</div>
+        <span class="info-tag-text" data-finish-text>${finishFullLabel(cardFinishes[mat.id] || mat.finish, mat)}</span>
+        <div class="info-tag-chevron"><img src="${CHEVRON_DOWN}" alt=""/></div>
+      </div>
+      <button class="see-details-btn" data-id="${mat.id}">See Details</button>
+    </div>
+  `;
+
+  card.addEventListener('click', () => selectMaterial(mat.id));
+
+  card.setAttribute('draggable', 'true');
+  card.addEventListener('dragstart', (e) => {
+    draggedMatId = mat.id;
+    e.dataTransfer.effectAllowed = 'copy';
+    try { e.dataTransfer.setData('text/plain', 'mat:' + mat.id); } catch (_) {}
+    const rect = card.getBoundingClientRect();
+    const ghost = card.cloneNode(true);
+    ghost.classList.add('mat-drag-ghost');
+    ghost.style.width = rect.width + 'px';
+    ghost.style.height = rect.height + 'px';
+    document.body.appendChild(ghost);
+    try { e.dataTransfer.setDragImage(ghost, e.clientX - rect.left, e.clientY - rect.top); } catch (_) {}
+    setTimeout(() => { card.classList.add('dragging'); ghost.remove(); }, 0);
+  });
+  card.addEventListener('dragend', () => {
+    card.classList.remove('dragging');
+    draggedMatId = null;
+    clearDnDIndicators();
+  });
+  return card;
+}
+
+function toggleBookmark(e, matId) {
+  e.stopPropagation();
+  if (bookmarkedMats.has(matId)) bookmarkedMats.delete(matId);
+  else bookmarkedMats.add(matId);
+  updateBookmarkFilterChip();
+  if (activeFilter === 'bookmarked' && bookmarkedMats.size === 0) {
+    activeFilter = 'all';
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+  }
+  renderGrid();
+}
+
+function updateBookmarkFilterChip() {
+  const chip = document.getElementById('filter-bookmarked');
+  if (!chip) return;
+  chip.style.display = bookmarkedMats.size > 0 ? 'flex' : 'none';
+}
+
+function renderGrid() {
+  const grid = document.getElementById('mat-grid');
+  grid.innerHTML = '';
+  const filtered = activeFilter === 'all'
+    ? MATERIALS
+    : activeFilter === 'fastest'
+    ? MATERIALS.filter(m => m.delivery !== null)
+    : activeFilter === 'bookmarked'
+    ? MATERIALS.filter(m => bookmarkedMats.has(m.id))
+    : MATERIALS.filter(m => m.tech === activeFilter);
+
+  document.getElementById('mat-count').textContent = `${filtered.length} material${filtered.length !== 1 ? 's' : ''}`;
+
+  filtered.forEach(mat => {
+    const card = renderCard(mat);
+    if (mat.id === selectedId) card.classList.add('selected');
+    grid.appendChild(card);
+  });
+}
+
+function finishIconUrl(finish) {
+  if (finish === 'sanded')   return ICON_SANDED;
+  if (finish === 'standard') return ICON_STANDARD;
+  return ICON_ATTACHED;
+}
+
+function finishIconHTML(finish) {
+  if (finish === 'attached') return `<div class="info-tag-icon-inner-a"><img src="${ICON_ATTACHED}" alt=""/></div>`;
+  if (finish === 'sanded')   return `<div class="info-tag-icon-inner-b"><img src="${ICON_SANDED}" alt=""/></div>`;
+  if (finish === 'removed')  return `<div style="position:absolute;width:14.999px;height:13.333px;left:4px;top:5.32px;overflow:visible;"><img src="${ICON_REMOVED}" alt="" style="position:absolute;top:-3.75%;right:-3.33%;bottom:-3.75%;left:-3.33%;max-width:none;width:106.66%;height:107.5%;display:block;"/></div><div style="position:absolute;width:1.5px;height:1.5px;left:12px;top:14px;"><img src="${ICON_REMOVED_DOT1}" alt="" style="position:absolute;inset:0;width:100%;height:100%;max-width:none;"/></div><div style="position:absolute;width:1.5px;height:1.5px;left:15px;top:13px;"><img src="${ICON_REMOVED_DOT2}" alt="" style="position:absolute;inset:0;width:100%;height:100%;max-width:none;"/></div><div style="position:absolute;width:1.5px;height:1.5px;left:13px;top:16px;"><img src="${ICON_REMOVED_DOT2}" alt="" style="position:absolute;inset:0;width:100%;height:100%;max-width:none;"/></div><div style="position:absolute;width:1.5px;height:1.5px;left:7px;top:10px;"><img src="${ICON_REMOVED_DOT2}" alt="" style="position:absolute;inset:0;width:100%;height:100%;max-width:none;"/></div><div style="position:absolute;width:1.5px;height:1.5px;left:7px;top:13px;"><img src="${ICON_REMOVED_DOT2}" alt="" style="position:absolute;inset:0;width:100%;height:100%;max-width:none;"/></div>`;
+  return `<div class="info-tag-icon-inner-b"><img src="${ICON_STANDARD}" alt=""/></div>`;
+}
+
+function finishLabelShort(finishLabel) {
+  // e.g. "Sanded - $5" → "Sanded"
+  return finishLabel ? finishLabel.split(' - ')[0] : 'Attached';
+}
+
+function renderModelList() {
+  const scroll = document.getElementById('ml-scroll');
+  if (!scroll) return;
+  const prices = { attached: '$0', removed: '$3', sanded: '$5', standard: '$0' };
+  scroll.innerHTML = GROUPS.map(g => {
+    const mat = MATERIALS.find(m => m.id === g.materialId);
+    const groupItems = g.itemIds.map(getItem).filter(Boolean);
+    const finishes = new Set(groupItems.map(i => i.finish));
+    const isMixed = finishes.size > 1;
+    const groupFinish = isMixed ? null : [...finishes][0];
+    const anySelected = groupItems.some(i => i.selected);
+    const allSelected = groupItems.length > 0 && groupItems.every(i => i.selected);
+    const partialSelected = anySelected && !allSelected;
+
+    const plateRow = `
+      <div class="ml-plate-row" data-group-id="${g.id}">
+        <div class="ml-chevron" onclick="toggleGroup(this)">
+          <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="#232018" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+        <div class="ml-checkbox" onclick="toggleAllItems('${g.id}')" style="cursor:pointer; ${anySelected ? 'background:#391ED4; border-color:#391ED4;' : ''}">
+          ${partialSelected
+            ? `<svg width="8" height="2" viewBox="0 0 8 2" fill="none"><path d="M1 1h6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>`
+            : `<svg width="10" height="8" viewBox="0 0 10 8" fill="none" style="display:${allSelected ? 'block' : 'none'}"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+        </div>
+        <div class="ml-badge-group">
+          <div class="ml-badge" onclick="openGroupMaterialDropdown(event, this, '${g.id}')">
+            <div class="ml-badge-swatch" style="background:${mat.swatch}"></div>
+            <span class="ml-badge-name">${mat.name}</span>
+            <div class="ml-badge-chevron"><img src="${CHEVRON_DOWN}" alt=""/></div>
+          </div>
+          <div class="ml-sep"></div>
+          <div class="ml-finish${isMixed ? ' mixed' : ''}" onclick="openGroupFinishDropdown(event, this, '${g.id}')">
+            <div class="info-tag-icon">${isMixed ? '' : finishIconHTML(groupFinish)}</div>
+            <span class="ml-finish-text">${isMixed ? 'Mixed' : groupFinish.charAt(0).toUpperCase() + groupFinish.slice(1)}</span>
+            <div class="ml-finish-chevron"><img src="${CHEVRON_DOWN}" alt=""/></div>
+          </div>
+        </div>
+        <div class="ml-plus-btn">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M5 1v8M1 5h8" stroke="#232018" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    `;
+
+    const rows = groupItems.map((it, idx) => {
+      const isEnding = idx === groupItems.length - 1;
+      return `
+        <div class="ml-item-row${it.selected ? ' selected' : ''}${it.inView ? ' in-view' : ''}${isEnding ? ' ending' : ''}" data-item-id="${it.id}" data-group-id="${g.id}" draggable="true">
+          <div class="ml-item-tree">
+            <div class="ml-item-lines">
+              <div class="ml-item-line"></div>
+              <div class="ml-item-checkbox" onclick="toggleItem('${it.id}')"><svg class="ml-item-checkbox-check" width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l3 3 5-6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              <div class="ml-item-line"></div>
+            </div>
+            <div class="ml-item-horiz"></div>
+            <div class="ml-item-icon" onclick="setInView('${it.id}')">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M1 8C1 8 3.5 3 8 3C12.5 3 15 8 15 8C15 8 12.5 13 8 13C3.5 13 1 8 1 8Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.2"/></svg>
+            </div>
+          </div>
+          <div class="ml-item-body">
+            <div class="ml-item-top">
+              <span class="ml-item-name">${it.name}</span>
+              <div class="ml-item-tags">
+                <span class="ml-item-tag stl">.STL</span>
+                <span class="ml-item-tag">100%</span>
+                <span class="ml-item-tag ml-item-tag-unit">${currentUnit}</span>
+              </div>
+            </div>
+            <div class="ml-item-bottom">
+              <div class="ml-finish-tag" onclick="openItemFinishDropdown(event, this, '${it.id}')">
+                <div class="ml-finish-tag-icon">${finishIconHTML(it.finish)}</div>
+                <span class="ml-finish-tag-name">${it.finish.charAt(0).toUpperCase() + it.finish.slice(1)}</span>
+                <span class="ml-finish-tag-price">${prices[it.finish] || '$0'}</span>
+                <div class="ml-finish-chevron"><img src="${CHEVRON_DOWN}" alt=""/></div>
+              </div>
+              <div class="ml-item-price-row">
+                <span class="ml-item-price">${it.price}</span>
+                <div class="ml-qty">
+                  <span class="ml-qty-val">${it.qty}</span>
+                  <div class="ml-qty-arrows">
+                    <div class="ml-qty-arrow up"></div>
+                    <div class="ml-qty-arrow down"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    return plateRow + rows;
+  }).join('');
+  updateCardGridHighlight();
+  updateSelectionBadge();
+  syncActiveCardFinishBadge();
+  updateViewport();
+}
+
+function updateViewport() {
+  const inView = ITEMS.find(i => i.inView);
+  const nameEl = document.getElementById('vp-filename');
+  const tintEl = document.getElementById('vp-tint');
+  if (nameEl) nameEl.textContent = inView ? `${inView.name}.STL` : '';
+  if (tintEl) {
+    const g = inView ? groupOfItem(inView.id) : null;
+    const mat = g ? MATERIALS.find(m => m.id === g.materialId) : null;
+    tintEl.style.background = mat ? mat.swatch : 'transparent';
+  }
+}
+
+function updateCardGridHighlight() {
+  const selectedItems = ITEMS.filter(i => i.selected);
+  const selectedGroupIds = new Set(selectedItems.map(i => {
+    const g = groupOfItem(i.id);
+    return g ? g.id : null;
+  }).filter(Boolean));
+  const selectedMats = new Set(selectedItems.map(i => {
+    const g = groupOfItem(i.id);
+    return g ? g.materialId : null;
+  }).filter(Boolean));
+  if (selectedGroupIds.size > 1 || selectedMats.size > 1) {
+    selectedId = null;
+  } else if (selectedMats.size === 1) {
+    selectedId = [...selectedMats][0];
+  } else {
+    const active = activeGroup();
+    selectedId = active ? active.materialId : null;
+  }
+  document.querySelectorAll('.mat-card').forEach(el => {
+    el.classList.toggle('selected', parseInt(el.dataset.id) === selectedId);
+  });
+}
+
+function syncActiveCardFinishBadge() {
+  const active = activeGroup();
+  if (!active) return;
+  const groupItems = active.itemIds.map(getItem).filter(Boolean);
+  const selectedInGroup = groupItems.filter(i => i.selected);
+  const basisItems = selectedInGroup.length > 0 ? selectedInGroup : groupItems;
+  const finishes = new Set(basisItems.map(i => i.finish));
+  const isMixed = finishes.size > 1;
+  const card = document.querySelector(`.mat-card[data-id="${active.materialId}"]`);
+  if (!card) return;
+  const infoTag = card.querySelector('.info-tag');
+  if (!infoTag) return;
+  const iconEl = infoTag.querySelector('[data-finish-icon]');
+  const textEl = infoTag.querySelector('[data-finish-text]');
+  const mat = MATERIALS.find(m => m.id === active.materialId);
+  if (isMixed) {
+    infoTag.classList.add('mixed');
+    if (textEl) textEl.textContent = 'Mixed';
+  } else {
+    const f = [...finishes][0];
+    infoTag.classList.remove('mixed');
+    cardFinishes[active.materialId] = f;
+    if (iconEl) iconEl.innerHTML = finishIconHTML(f);
+    if (textEl) textEl.textContent = finishFullLabel(f, mat);
+  }
+}
+
+function toggleGroup(chevron) {
+  const plate = chevron.closest('.ml-plate-row');
+  const gid = plate.dataset.groupId;
+  const isCollapsed = plate.classList.toggle('collapsed');
+  document.querySelectorAll(`.ml-item-row[data-group-id="${gid}"]`).forEach(row => {
+    row.classList.toggle('collapsed', isCollapsed);
+  });
+}
+
+function setInView(itemId) {
+  ITEMS.forEach(i => i.inView = false);
+  const it = getItem(itemId);
+  if (it) it.inView = true;
+  renderModelList();
+}
+
+let selectionAnchorId = null;
+
+function flatItemsInListOrder() {
+  return GROUPS.flatMap(g => g.itemIds.map(getItem).filter(Boolean));
+}
+
+function singleSelect(itemId) {
+  const it = getItem(itemId);
+  if (!it) return;
+  ITEMS.forEach(i => { i.selected = false; i.inView = false; });
+  it.selected = true;
+  it.inView = true;
+  selectionAnchorId = itemId;
+  renderModelList();
+  updateCardGridHighlight();
+}
+
+function toggleItemSelection(itemId) {
+  const it = getItem(itemId);
+  if (!it) return;
+  it.selected = !it.selected;
+  if (it.selected) {
+    ITEMS.forEach(i => i.inView = false);
+    it.inView = true;
+    selectionAnchorId = itemId;
+  } else if (it.inView) {
+    const nextSel = ITEMS.find(i => i.selected && i !== it);
+    it.inView = false;
+    if (nextSel) nextSel.inView = true;
+    else it.inView = true;
+  }
+  renderModelList();
+  updateCardGridHighlight();
+}
+
+function rangeSelect(itemId) {
+  const flat = flatItemsInListOrder();
+  const anchor = selectionAnchorId ? flat.find(i => i.id === selectionAnchorId) : null;
+  const target = flat.find(i => i.id === itemId);
+  if (!target) return;
+  if (!anchor) { singleSelect(itemId); return; }
+  const a = flat.indexOf(anchor);
+  const b = flat.indexOf(target);
+  const [lo, hi] = a < b ? [a, b] : [b, a];
+  ITEMS.forEach(i => { i.selected = false; i.inView = false; });
+  for (let i = lo; i <= hi; i++) flat[i].selected = true;
+  target.inView = true;
+  renderModelList();
+  updateCardGridHighlight();
+}
+
+let itemClipboard = [];
+
+function copySelectedItems() {
+  const selected = ITEMS.filter(i => i.selected);
+  if (!selected.length) return;
+  itemClipboard = selected.map(i => {
+    const g = groupOfItem(i.id);
+    return { name: i.name, finish: i.finish, price: i.price, qty: i.qty, materialId: g ? g.materialId : null };
+  });
+}
+
+let nextItemSeq = 1000;
+function pasteItems() {
+  if (!itemClipboard.length) return;
+  const newItems = [];
+  itemClipboard.forEach(src => {
+    const newId = 'p' + (nextItemSeq++);
+    const newItem = { id: newId, name: src.name, selected: false, inView: false, finish: src.finish, price: src.price, qty: src.qty };
+    ITEMS.push(newItem);
+    newItems.push(newItem);
+    let targetGroup = src.materialId != null ? GROUPS.find(g => g.materialId === src.materialId) : null;
+    if (!targetGroup) {
+      const matId = src.materialId != null ? src.materialId : (GROUPS[0] && GROUPS[0].materialId);
+      targetGroup = { id: 'g' + nextGroupId++, materialId: matId, itemIds: [] };
+      GROUPS.push(targetGroup);
+    }
+    targetGroup.itemIds.push(newId);
+  });
+  ITEMS.forEach(i => { i.selected = false; i.inView = false; });
+  newItems.forEach(i => { i.selected = true; });
+  if (newItems[0]) { newItems[0].inView = true; selectionAnchorId = newItems[0].id; }
+  renderModelList();
+  updateCardGridHighlight();
+}
+
+document.addEventListener('keydown', e => {
+  const tag = (e.target && e.target.tagName) || '';
+  if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) return;
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'c') {
+    if (ITEMS.some(i => i.selected)) { e.preventDefault(); copySelectedItems(); }
+  } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'v') {
+    if (itemClipboard.length) { e.preventDefault(); pasteItems(); }
+  }
+});
+
+function toggleAllItems(groupId) {
+  const g = getGroup(groupId);
+  if (!g) return;
+  const items = g.itemIds.map(getItem).filter(Boolean);
+  const allSelected = items.every(i => i.selected);
+  if (allSelected) {
+    items.forEach(i => { if (!i.inView) i.selected = false; });
+  } else {
+    items.forEach(i => i.selected = true);
+  }
+  renderModelList();
+}
+
+function toggleItem(itemId) {
+  const it = getItem(itemId);
+  if (!it) return;
+  if (it.inView) {
+    const selectedAll = ITEMS.filter(i => i.selected);
+    if (selectedAll.length < 2) return;
+    const g = groupOfItem(itemId);
+    const items = g.itemIds.map(getItem).filter(Boolean);
+    const idx = items.indexOf(it);
+    let next = items.slice(idx + 1).find(i => i.selected && i !== it)
+            || items.slice(0, idx).reverse().find(i => i.selected && i !== it);
+    if (!next) {
+      const allIdx = ITEMS.indexOf(it);
+      next = ITEMS.slice(allIdx + 1).find(i => i.selected && i !== it)
+          || ITEMS.slice(0, allIdx).reverse().find(i => i.selected && i !== it);
+    }
+    if (!next) return;
+    it.inView = false;
+    it.selected = false;
+    next.inView = true;
+  } else {
+    it.selected = !it.selected;
+  }
+  renderModelList();
+}
+
+function deleteSelectedItems() {
+  const ids = new Set(ITEMS.filter(i => i.selected).map(i => i.id));
+  if (ids.size === 0) return;
+
+  // Remember the first selected item's group and its position so we can pick
+  // the closest surviving sibling after deletion.
+  const firstSelected = ITEMS.find(i => i.selected);
+  const anchorGroup = firstSelected ? groupOfItem(firstSelected.id) : null;
+  const anchorIdx   = anchorGroup ? anchorGroup.itemIds.indexOf(firstSelected.id) : -1;
+
+  for (let i = ITEMS.length - 1; i >= 0; i--) if (ids.has(ITEMS[i].id)) ITEMS.splice(i, 1);
+  GROUPS.forEach(g => { g.itemIds = g.itemIds.filter(id => !ids.has(id)); });
+  GROUPS = GROUPS.filter(g => g.itemIds.length > 0);
+
+  ITEMS.forEach(i => { i.selected = false; i.inView = false; });
+
+  let nextId = null;
+  const survivingAnchor = anchorGroup && GROUPS.find(g => g.id === anchorGroup.id);
+  if (survivingAnchor && survivingAnchor.itemIds.length > 0) {
+    nextId = survivingAnchor.itemIds[Math.min(anchorIdx, survivingAnchor.itemIds.length - 1)];
+  } else if (ITEMS.length > 0) {
+    nextId = ITEMS[0].id;
+  }
+  if (nextId) {
+    const next = getItem(nextId);
+    if (next) { next.selected = true; next.inView = true; }
+  }
+  renderModelList();
+}
+
+function updateSelectionBadge() {
+  const count = ITEMS.filter(i => i.selected).length;
+  const badge = document.querySelector('.ml-selection-badge');
+  if (badge) badge.textContent = count > 0 ? `${count} in Selection` : 'None Selected';
+}
+
+function selectMaterial(matId) {
+  const mat = MATERIALS.find(m => m.id === matId);
+  const defaultFinish = cardFinishes[matId] || getFinishOptions(mat)[0].value;
+  const selectedItems = ITEMS.filter(i => i.selected);
+  if (selectedItems.length === 0) {
+    selectedId = matId;
+    updateCardGridHighlight();
+    return;
+  }
+  if (selectedItems.length === ITEMS.length && GROUPS.length > 1) {
+    const mergedIds = ITEMS.map(i => i.id);
+    ITEMS.forEach(i => i.finish = defaultFinish);
+    GROUPS = [{ id: 'g' + nextGroupId++, materialId: matId, itemIds: mergedIds }];
+    renderModelList();
+    updateCardGridHighlight();
+    return;
+  }
+  const selectedIds = selectedItems.map(i => i.id);
+  selectedItems.forEach(i => i.finish = defaultFinish);
+  GROUPS.forEach(g => { g.itemIds = g.itemIds.filter(id => !selectedIds.includes(id)); });
+  let targetGroup = GROUPS.find(g => g.materialId === matId);
+  if (targetGroup) {
+    targetGroup.itemIds.push(...selectedIds);
+  } else {
+    GROUPS.push({ id: 'g' + nextGroupId++, materialId: matId, itemIds: selectedIds });
+  }
+  GROUPS = GROUPS.filter(g => g.itemIds.length > 0);
+  renderModelList();
+  updateCardGridHighlight();
+}
+
+function openGroupMaterialDropdown(e, trigger, groupId) {
+  e.stopPropagation();
+  if (mlDropdownTrigger === trigger) { closeDropdown(); return; }
+  const g = getGroup(groupId);
+  mlDropdown.innerHTML = MATERIALS.map(m => `
+    <div class="ml-dropdown-item${g.materialId === m.id ? ' active' : ''}" onclick="selectGroupMaterialFromDropdown('${groupId}', ${m.id})">
+      <div class="ml-dropdown-swatch" style="background:${m.swatch}"></div>
+      <span>${m.name}</span>
+    </div>`).join('');
+  positionDropdown(trigger);
+}
+
+function selectGroupMaterialFromDropdown(groupId, matId) {
+  closeDropdown();
+  const g = getGroup(groupId);
+  if (!g || g.materialId === matId) return;
+  const mat = MATERIALS.find(m => m.id === matId);
+  const defaultFinish = cardFinishes[matId] || getFinishOptions(mat)[0].value;
+  g.itemIds.forEach(id => { const it = getItem(id); if (it) it.finish = defaultFinish; });
+  const existingTargetGroup = GROUPS.find(other => other !== g && other.materialId === matId);
+  if (existingTargetGroup) {
+    existingTargetGroup.itemIds.push(...g.itemIds);
+    GROUPS = GROUPS.filter(other => other !== g);
+  } else {
+    g.materialId = matId;
+  }
+  renderModelList();
+  updateCardGridHighlight();
+}
+
+function openGroupFinishDropdown(e, trigger, groupId) {
+  e.stopPropagation();
+  if (mlDropdownTrigger === trigger) { closeDropdown(); return; }
+  const g = getGroup(groupId);
+  const mat = MATERIALS.find(m => m.id === g.materialId);
+  const items = g.itemIds.map(getItem).filter(Boolean);
+  const finishes = new Set(items.map(i => i.finish));
+  const cur = finishes.size === 1 ? [...finishes][0] : null;
+  mlDropdown.innerHTML = getFinishOptions(mat).map(opt => `
+    <div class="ml-dropdown-item${cur !== null && opt.value === cur ? ' active' : ''}" onclick="selectGroupFinishFromDropdown('${groupId}','${opt.value}')">
+      <div class="ml-dropdown-finish-icon">${finishIconHTML(opt.value)}</div>
+      <span>${opt.label}</span>
+      <span class="ml-dropdown-item-price">${opt.price}</span>
+    </div>`).join('');
+  positionDropdown(trigger);
+}
+
+function selectGroupFinishFromDropdown(groupId, value) {
+  closeDropdown();
+  const g = getGroup(groupId);
+  if (!g) return;
+  g.itemIds.forEach(id => { const it = getItem(id); if (it) it.finish = value; });
+  cardFinishes[g.materialId] = value;
+  renderModelList();
+}
+
+function openItemFinishDropdown(e, trigger, itemId) {
+  e.stopPropagation();
+  if (mlDropdownTrigger === trigger) { closeDropdown(); return; }
+  const g = groupOfItem(itemId);
+  const mat = MATERIALS.find(m => m.id === g.materialId);
+  const it = getItem(itemId);
+  mlDropdown.innerHTML = getFinishOptions(mat).map(opt => `
+    <div class="ml-dropdown-item${opt.value === it.finish ? ' active' : ''}" onclick="selectItemFinishFromDropdown('${itemId}','${opt.value}')">
+      <div class="ml-dropdown-finish-icon">${finishIconHTML(opt.value)}</div>
+      <span>${opt.label}</span>
+      <span class="ml-dropdown-item-price">${opt.price}</span>
+    </div>`).join('');
+  positionDropdown(trigger);
+}
+
+function selectItemFinishFromDropdown(itemId, value) {
+  closeDropdown();
+  const it = getItem(itemId);
+  if (!it) return;
+  it.finish = value;
+  renderModelList();
+}
+
+function openCardFinishDropdown(e, trigger, matId) {
+  e.stopPropagation();
+  closeDropdown();
+  selectMaterial(matId);
+  const active = activeGroup();
+  const isActiveMat = active && active.materialId === matId;
+  const mat = MATERIALS.find(m => m.id === matId);
+  const opts = getFinishOptions(mat);
+  let cur = cardFinishes[matId] || opts[0].value;
+  if (isActiveMat) {
+    const items = active.itemIds.map(getItem).filter(Boolean);
+    const finishes = new Set(items.map(i => i.finish));
+    if (finishes.size === 1) cur = [...finishes][0];
+  }
+  const grid = document.getElementById('fp-grid');
+  const swatch = mat ? mat.swatch : 'transparent';
+  grid.innerHTML = opts.map(opt => {
+    const meta = FINISH_META[opt.value] || { title: opt.label, desc: '', image: '' };
+    const active = opt.value === cur ? ' active' : '';
+    const p = meta.imgPos || { w: 100, h: 100, l: 0, t: 0 };
+    const photoStyle = `left:${p.l}%;top:${p.t}%;width:${p.w}%;height:${p.h}%;`;
+    const maskStyle = `background:${swatch};` +
+      `-webkit-mask-image:url('${meta.mask || meta.image}');mask-image:url('${meta.mask || meta.image}');` +
+      `-webkit-mask-size:${p.w}% ${p.h}%;mask-size:${p.w}% ${p.h}%;` +
+      `-webkit-mask-position:${p.l}% ${p.t}%;mask-position:${p.l}% ${p.t}%;`;
+    const priceNum = (opt.price || '').replace(/[^0-9.]/g, '') || '0';
+    const priceStr = '$' + parseFloat(priceNum).toFixed(2);
+    return `
+      <div class="fp-card${active}" data-value="${opt.value}" onclick="selectCardFinishFromDropdown(${matId},'${opt.value}')">
+        <div class="fp-image">
+          <img class="fp-image-photo" src="${meta.image}" alt="" style="${photoStyle}"/>
+          <div class="fp-image-tint" style="${maskStyle}"></div>
+        </div>
+        <div class="fp-text">
+          <div class="fp-name-row">
+            <span class="fp-name">${meta.title}</span>
+            <span class="fp-price">${priceStr}</span>
+          </div>
+          <div class="fp-desc">${meta.desc}</div>
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('finish-popup-backdrop').classList.add('open');
+}
+
+function selectCardFinishFromDropdown(matId, value) {
+  closeDropdown();
+  document.getElementById('finish-popup-backdrop')?.classList.remove('open');
+  cardFinishes[matId] = value;
+  const matGroups = GROUPS.filter(g => g.materialId === matId);
+  const targetItems = matGroups.flatMap(g => g.itemIds.map(getItem).filter(Boolean))
+    .filter(i => i.selected);
+  if (targetItems.length > 0) {
+    targetItems.forEach(i => i.finish = value);
+  } else {
+    matGroups.forEach(g => g.itemIds.forEach(id => {
+      const it = getItem(id); if (it) it.finish = value;
+    }));
+  }
+  renderModelList();
+  syncActiveCardFinishBadge();
+}
+
+// Drag and drop
+let draggedItemId = null;
+let draggedMatId = null;
+
+function clearDnDIndicators() {
+  document.querySelectorAll('.drop-before, .drop-after, .drop-into, .drop-mat').forEach(el => {
+    el.classList.remove('drop-before', 'drop-after', 'drop-into', 'drop-mat');
+  });
+}
+
+function applyMaterialToItems(matId, itemIds) {
+  const mat = MATERIALS.find(m => m.id === matId);
+  if (!mat || !itemIds || !itemIds.length) return;
+  const defaultFinish = cardFinishes[matId] || getFinishOptions(mat)[0].value;
+  const items = itemIds.map(getItem).filter(Boolean);
+  items.forEach(i => i.finish = defaultFinish);
+  GROUPS.forEach(g => { g.itemIds = g.itemIds.filter(id => !itemIds.includes(id)); });
+  let targetGroup = GROUPS.find(g => g.materialId === matId);
+  if (targetGroup) {
+    targetGroup.itemIds.push(...itemIds);
+  } else {
+    GROUPS.push({ id: 'g' + nextGroupId++, materialId: matId, itemIds: [...itemIds] });
+  }
+  GROUPS = GROUPS.filter(g => g.itemIds.length > 0);
+  renderModelList();
+  updateCardGridHighlight();
+}
+
+function moveItemToGroup(itemId, destGroupId, destIndex) {
+  const item = getItem(itemId);
+  const destGroup = getGroup(destGroupId);
+  if (!item || !destGroup) return;
+  const srcGroup = groupOfItem(itemId);
+  if (!srcGroup) return;
+
+  const srcIdx = srcGroup.itemIds.indexOf(itemId);
+  if (srcGroup === destGroup) {
+    srcGroup.itemIds.splice(srcIdx, 1);
+    let insertAt = destIndex;
+    if (srcIdx < destIndex) insertAt = destIndex - 1;
+    insertAt = Math.max(0, Math.min(insertAt, destGroup.itemIds.length));
+    destGroup.itemIds.splice(insertAt, 0, itemId);
+  } else {
+    srcGroup.itemIds.splice(srcIdx, 1);
+    const destItems = destGroup.itemIds.map(getItem).filter(Boolean);
+    const finishes = new Set(destItems.map(i => i.finish));
+    let inheritedFinish;
+    if (finishes.size === 1) {
+      inheritedFinish = [...finishes][0];
+    } else {
+      const mat = MATERIALS.find(m => m.id === destGroup.materialId);
+      inheritedFinish = cardFinishes[destGroup.materialId] || getFinishOptions(mat)[0].value;
+    }
+    item.finish = inheritedFinish;
+    let insertAt = Math.max(0, Math.min(destIndex, destGroup.itemIds.length));
+    destGroup.itemIds.splice(insertAt, 0, itemId);
+  }
+
+  GROUPS = GROUPS.filter(g => g.itemIds.length > 0);
+
+  if (!ITEMS.some(i => i.inView)) {
+    const firstSelected = ITEMS.find(i => i.selected);
+    if (firstSelected) firstSelected.inView = true;
+  }
+
+  renderModelList();
+  updateCardGridHighlight();
+}
+
+function setupModelListDnD() {
+  const scroll = document.getElementById('ml-scroll');
+  if (!scroll) return;
+
+  scroll.addEventListener('dragstart', (e) => {
+    const row = e.target.closest('.ml-item-row');
+    if (!row) return;
+    draggedItemId = row.dataset.itemId;
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', draggedItemId); } catch (_) {}
+    const rect = row.getBoundingClientRect();
+    const ghost = row.cloneNode(true);
+    ghost.classList.add('ml-drag-ghost');
+    ghost.style.width = rect.width + 'px';
+    ghost.style.height = rect.height + 'px';
+    document.body.appendChild(ghost);
+    try { e.dataTransfer.setDragImage(ghost, e.clientX - rect.left, e.clientY - rect.top); } catch (_) {}
+    setTimeout(() => { row.classList.add('dragging'); ghost.remove(); }, 0);
+  });
+
+  scroll.addEventListener('dragover', (e) => {
+    if (draggedMatId != null) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'copy';
+      clearDnDIndicators();
+      const itemRow = e.target.closest('.ml-item-row');
+      const plateRow = e.target.closest('.ml-plate-row');
+      if (itemRow) itemRow.classList.add('drop-mat');
+      else if (plateRow) plateRow.classList.add('drop-mat');
+      return;
+    }
+    if (!draggedItemId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    clearDnDIndicators();
+    const itemRow = e.target.closest('.ml-item-row');
+    const plateRow = e.target.closest('.ml-plate-row');
+    if (itemRow) {
+      const rect = itemRow.getBoundingClientRect();
+      const mid = rect.top + rect.height / 2;
+      itemRow.classList.add(e.clientY < mid ? 'drop-before' : 'drop-after');
+    } else if (plateRow) {
+      plateRow.classList.add('drop-into');
+    }
+  });
+
+  scroll.addEventListener('dragleave', (e) => {
+    if (!e.relatedTarget || !scroll.contains(e.relatedTarget)) {
+      clearDnDIndicators();
+    }
+  });
+
+  scroll.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (draggedMatId != null) {
+      const itemRow = e.target.closest('.ml-item-row');
+      const plateRow = e.target.closest('.ml-plate-row');
+      let targetItemIds = null;
+      if (itemRow) {
+        targetItemIds = [itemRow.dataset.itemId];
+      } else if (plateRow) {
+        const g = getGroup(plateRow.dataset.groupId);
+        if (g) targetItemIds = [...g.itemIds];
+      }
+      clearDnDIndicators();
+      if (targetItemIds && targetItemIds.length) applyMaterialToItems(draggedMatId, targetItemIds);
+      draggedMatId = null;
+      return;
+    }
+    if (!draggedItemId) return;
+    const itemRow = e.target.closest('.ml-item-row');
+    const plateRow = e.target.closest('.ml-plate-row');
+    let destGroupId = null;
+    let destIndex = 0;
+    if (itemRow && itemRow.dataset.itemId !== draggedItemId) {
+      const targetId = itemRow.dataset.itemId;
+      const g = groupOfItem(targetId);
+      if (g) {
+        destGroupId = g.id;
+        const rect = itemRow.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+        const idx = g.itemIds.indexOf(targetId);
+        destIndex = e.clientY < mid ? idx : idx + 1;
+      }
+    } else if (plateRow) {
+      const gid = plateRow.dataset.groupId;
+      const g = getGroup(gid);
+      if (g) {
+        destGroupId = g.id;
+        destIndex = g.itemIds.length;
+      }
+    }
+    clearDnDIndicators();
+    if (destGroupId) moveItemToGroup(draggedItemId, destGroupId, destIndex);
+    draggedItemId = null;
+  });
+
+  scroll.addEventListener('click', (e) => {
+    if (e.target.closest('.ml-item-checkbox, .ml-item-icon, .ml-finish-tag, .ml-qty, .ml-plate-row')) return;
+    const row = e.target.closest('.ml-item-row');
+    if (!row) return;
+    const itemId = row.dataset.itemId;
+    if (e.shiftKey) {
+      rangeSelect(itemId);
+    } else if (e.metaKey || e.ctrlKey) {
+      toggleItemSelection(itemId);
+    } else {
+      singleSelect(itemId);
+    }
+  });
+
+  scroll.addEventListener('dragend', () => {
+    document.querySelectorAll('.ml-item-row.dragging').forEach(el => el.classList.remove('dragging'));
+    clearDnDIndicators();
+    draggedItemId = null;
+  });
+}
+
+// Dropdown panel
+const mlDropdown = document.createElement('div');
+mlDropdown.className = 'ml-dropdown-panel';
+document.body.appendChild(mlDropdown);
+let mlDropdownTrigger = null;
+
+function positionDropdown(trigger) {
+  mlDropdown.style.left = '0';
+  mlDropdown.style.top = '0';
+  mlDropdown.classList.add('open');
+  const r = trigger.getBoundingClientRect();
+  const dp = mlDropdown.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  let left = r.left;
+  let top = r.bottom + 4;
+  if (left + dp.width > vw - 8) left = Math.max(8, r.right - dp.width);
+  if (top + dp.height > vh - 8) top = r.top - dp.height - 4;
+  mlDropdown.style.left = left + 'px';
+  mlDropdown.style.top  = top + 'px';
+  mlDropdownTrigger = trigger;
+}
+
+function closeDropdown() {
+  mlDropdown.classList.remove('open');
+  mlDropdownTrigger = null;
+  document.querySelectorAll('.mat-card.dropdown-active').forEach(c => c.classList.remove('dropdown-active'));
+}
+
+document.addEventListener('mouseover', e => {
+  if (!mlDropdown.classList.contains('open')) return;
+  if (!mlDropdownTrigger) return;
+  const ownerCard = mlDropdownTrigger.closest('.mat-card');
+  if (!ownerCard) return;
+  const hoveredCard = e.target.closest('.mat-card');
+  if (hoveredCard && hoveredCard !== ownerCard && !mlDropdown.contains(e.target)) {
+    closeDropdown();
+  }
+});
+
+document.addEventListener('click', e => {
+  if (!mlDropdown.contains(e.target)) closeDropdown();
+});
+
+// Filter chips
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFilter = chip.dataset.filter;
+    renderGrid();
+  });
+});
+
+// Init
+document.getElementById('fastest-bolt-icon').src = DELIVERY_BOLT;
+document.getElementById('sort-chevron').src = SORT_CHEVRON;
+document.getElementById('layout-columns-icon').src = LAYOUT_COLUMNS;
+document.getElementById('layout-lines-icon').src = LAYOUT_LINES;
+document.getElementById('icon-crop').src   = ICON_CROP;
+document.getElementById('icon-copy').src   = ICON_COPYPASTE;
+document.getElementById('icon-trash').src  = ICON_TRASH;
+MATERIALS.forEach(m => { cardFinishes[m.id] = getFinishOptions(m)[0].value; });
+renderGrid();
+renderModelList();
+setupModelListDnD();
+document.getElementById('ml-action-delete')?.addEventListener('click', deleteSelectedItems);
+updateBookmarkFilterChip();
+
+function attachPanelResize(handle) {
+  if (handle.dataset.resizeBound) return;
+  handle.dataset.resizeBound = '1';
+  let dragging = false, startX = 0, startWidth = 0, target = null, dir = 'next', minW = 320;
+  handle.addEventListener('mousedown', e => {
+    dir = handle.dataset.resize || 'next';
+    target = dir === 'prev' ? handle.previousElementSibling : handle.nextElementSibling;
+    if (!target) return;
+    minW = parseInt(handle.dataset.min || '320', 10);
+    dragging = true;
+    startX = e.clientX;
+    startWidth = target.getBoundingClientRect().width;
+    handle.classList.add('dragging');
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'ew-resize';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging || !target) return;
+    const delta = dir === 'prev' ? (e.clientX - startX) : (startX - e.clientX);
+    const newWidth = Math.max(minW, startWidth + delta);
+    target.style.width = newWidth + 'px';
+    target.style.flex = '0 0 ' + newWidth + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    target = null;
+    handle.classList.remove('dragging');
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+  });
+}
+document.querySelectorAll('.panel-handle').forEach(attachPanelResize);
+
+(function setupViewportResize() {
+  const handle = document.querySelector('.handle-bar');
+  const viewport = document.querySelector('.viewport-module');
+  const modelList = document.querySelector('.model-list-module');
+  const rightPanel = document.querySelector('.right-panel');
+  if (!handle || !viewport || !modelList || !rightPanel) return;
+  let dragging = false;
+  let startY = 0;
+  let startHeight = 0;
+  const MIN_VIEWPORT = 240;
+  const MIN_MODEL_LIST = 300;
+  handle.addEventListener('mousedown', e => {
+    dragging = true;
+    startY = e.clientY;
+    startHeight = viewport.getBoundingClientRect().height;
+    handle.classList.add('dragging');
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'ns-resize';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const delta = e.clientY - startY;
+    const panelRect = rightPanel.getBoundingClientRect();
+    const handleH = handle.offsetHeight;
+    const maxViewport = Math.max(MIN_VIEWPORT, panelRect.height - handleH - MIN_MODEL_LIST);
+    const newHeight = Math.max(MIN_VIEWPORT, Math.min(maxViewport, startHeight + delta));
+    viewport.style.height = newHeight + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    handle.classList.remove('dragging');
+    document.body.style.userSelect = '';
+    document.body.style.cursor = '';
+  });
+})();
+
+/* ─── LAYOUT CONFIGURATOR ─────────────────────────────────── */
+function applyUnit(unit) {
+  currentUnit = unit;
+  const vpUnit = document.getElementById('vp-info-unit');
+  if (vpUnit) vpUnit.textContent = unit;
+  document.querySelectorAll('.vp-dim-label[data-mm]').forEach(el => {
+    const mm = parseFloat(el.dataset.mm);
+    el.textContent = unit === 'inch'
+      ? (mm / 25.4).toFixed(1) + '"'
+      : mm + 'mm';
+  });
+  if (typeof renderModelList === 'function') renderModelList();
+}
+
+let _layoutRefs = null;
+function applyLayout(mode) {
+  try {
+  layoutMode = mode;
+  // Remove any previously inserted model-mode secondary handle first.
+  document.querySelectorAll('.panel-handle[data-extra="1"]').forEach(h => h.remove());
+
+  // Cache references on first call — handleBar can be stashed inside a detached
+  // rightPanel in model mode, so querySelector won't find it on subsequent calls.
+  if (!_layoutRefs) {
+    _layoutRefs = {
+      inner:       document.querySelector('.inner-frame'),
+      material:    document.querySelector('.material-panel'),
+      panelHandle: document.querySelector('.panel-handle:not([data-extra])'),
+      rightPanel:  document.querySelector('.right-panel'),
+      viewport:    document.querySelector('.viewport-module'),
+      handleBar:   document.querySelector('.handle-bar'),
+      modelList:   document.querySelector('.model-list-module'),
+    };
+  }
+  const { inner, material, panelHandle, rightPanel, viewport, handleBar, modelList } = _layoutRefs;
+  if (!inner || !material || !rightPanel || !viewport || !modelList || !panelHandle || !handleBar) return;
+
+  // Detach every movable element from its current parent so we can reassemble cleanly.
+  [material, panelHandle, rightPanel, viewport, handleBar, modelList].forEach(el => {
+    if (el.parentElement) el.parentElement.removeChild(el);
+  });
+
+  // Clear inline sizing residue from any previous mode.
+  material.style.width = ''; material.style.flex = '';
+  modelList.style.width = ''; modelList.style.flex = '';
+  rightPanel.style.width = ''; rightPanel.style.flex = '';
+
+  if (mode === 'model') {
+    inner.classList.add('layout-model');
+    const handle2 = document.createElement('div');
+    handle2.className = 'panel-handle';
+    handle2.dataset.resize = 'prev';
+    handle2.dataset.min = '320';
+    handle2.dataset.extra = '1';
+    handle2.innerHTML = '<div class="panel-handle-pill"></div>';
+    // Reassemble: modelList | handle2 | viewport | panelHandle | material
+    inner.appendChild(modelList);
+    inner.appendChild(handle2);
+    inner.appendChild(viewport);
+    inner.appendChild(panelHandle);
+    inner.appendChild(material);
+    // handleBar is hidden in model mode; stash inside rightPanel (kept out of DOM).
+    rightPanel.appendChild(handleBar);
+    viewport.style.height = '';
+    attachPanelResize(handle2);
+  } else {
+    inner.classList.remove('layout-model');
+    // Reassemble: material | panelHandle | rightPanel(viewport, handleBar, modelList)
+    inner.appendChild(material);
+    inner.appendChild(panelHandle);
+    inner.appendChild(rightPanel);
+    rightPanel.appendChild(viewport);
+    rightPanel.appendChild(handleBar);
+    rightPanel.appendChild(modelList);
+    viewport.style.height = '290px';
+  }
+  } catch (err) { console.error('[applyLayout] ERROR:', err); }
+}
+
+function openLayoutPopup() {
+  const bd = document.getElementById('layout-popup-backdrop');
+  if (!bd) return;
+  bd.classList.add('open');
+  // Sync UI with state
+  document.querySelectorAll('#layout-popup-backdrop .lp-seg-unit .lp-seg-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.unit === currentUnit));
+  document.querySelectorAll('#layout-popup-backdrop .lp-layout-card').forEach(c =>
+    c.classList.toggle('active', c.dataset.layout === layoutMode));
+}
+function closeLayoutPopup() {
+  document.getElementById('layout-popup-backdrop')?.classList.remove('open');
+}
+
+// Delegated listener on document so binding works even if popup DOM is added later.
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#nav-gear-btn')) { openLayoutPopup(); return; }
+  const bd = document.getElementById('layout-popup-backdrop');
+  if (!bd || !bd.classList.contains('open')) return;
+  if (e.target === bd) { closeLayoutPopup(); return; }
+  if (e.target.closest('#lp-close')) { closeLayoutPopup(); return; }
+  const unitBtn = e.target.closest('.lp-seg-unit .lp-seg-btn');
+  if (unitBtn) {
+    applyUnit(unitBtn.dataset.unit);
+    bd.querySelectorAll('.lp-seg-unit .lp-seg-btn').forEach(b =>
+      b.classList.toggle('active', b === unitBtn));
+    return;
+  }
+  const viewBtn = e.target.closest('.lp-seg-view .lp-seg-btn');
+  if (viewBtn) {
+    bd.querySelectorAll('.lp-seg-view .lp-seg-btn').forEach(b =>
+      b.classList.toggle('active', b === viewBtn));
+    return;
+  }
+  const card = e.target.closest('.lp-layout-card');
+  if (card) {
+    applyLayout(card.dataset.layout);
+    bd.querySelectorAll('.lp-layout-card').forEach(c =>
+      c.classList.toggle('active', c === card));
+    return;
+  }
+});
+</script>
+
+<!-- Layout Configurator Popup -->
+<div class="layout-popup-backdrop" id="layout-popup-backdrop">
+  <div class="layout-popup">
+    <div class="lp-header">
+      <span class="lp-title">Choose your workspace layout</span>
+      <button class="lp-close" id="lp-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="lp-body">
+      <div class="lp-row">
+        <span class="lp-row-label">Units</span>
+        <div class="lp-seg lp-seg-unit">
+          <button class="lp-seg-btn active" data-unit="mm">mm</button>
+          <button class="lp-seg-btn" data-unit="inch">inch</button>
+        </div>
+      </div>
+      <div class="lp-row">
+        <span class="lp-row-label">Material view</span>
+        <div class="lp-seg lp-seg-view">
+          <button class="lp-seg-btn active" data-view="grid">Grid</button>
+          <button class="lp-seg-btn" data-view="list">List</button>
+        </div>
+      </div>
+      <div class="lp-layouts">
+        <div class="lp-layout-card active" data-layout="material">
+          <div class="lp-layout-thumb">
+            <div class="lp-thumb-box" style="flex:1.2"></div>
+            <div class="lp-thumb-col">
+              <div class="lp-thumb-box"></div>
+              <div class="lp-thumb-box"></div>
+            </div>
+          </div>
+          <div class="lp-layout-name">Material-focused</div>
+          <div class="lp-layout-desc">Larger materials panel with viewport and model list stacked on the right.</div>
+        </div>
+        <div class="lp-layout-card" data-layout="model">
+          <div class="lp-layout-thumb">
+            <div class="lp-thumb-box"></div>
+            <div class="lp-thumb-box" style="flex:1.3"></div>
+            <div class="lp-thumb-box"></div>
+          </div>
+          <div class="lp-layout-name">Model-focused</div>
+          <div class="lp-layout-desc">Model list, viewport, and materials arranged side-by-side.</div>
+        </div>
+      </div>
+    </div>
+    <div class="lp-footer">Changes apply instantly. You can switch anytime from the gear icon.</div>
+  </div>
+</div>
+
+<!-- Finish Selector Popup -->
+<div class="finish-popup-backdrop" id="finish-popup-backdrop">
+  <div class="finish-popup-shell">
+    <div class="finish-popup">
+      <button class="fp-close" id="fp-close" aria-label="Close">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <div class="fp-text-container">
+        <span class="fp-title">Select Finish</span>
+        <div class="fp-grid" id="fp-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const bd = document.getElementById('finish-popup-backdrop');
+  document.getElementById('fp-close').addEventListener('click', () => bd.classList.remove('open'));
+  bd.addEventListener('click', e => { if (e.target === bd) bd.classList.remove('open'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') bd.classList.remove('open'); });
+})();
+</script>
+</body>
+</html>
