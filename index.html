@@ -1597,15 +1597,16 @@
 let currentUnit = 'mm';
 let layoutMode = 'material';
 // Figma icon assets
-const DELIVERY_BOLT   = 'assets/c2c65d24-771a-45a1-971f-b65013150632.svg';
+const DELIVERY_BOLT   = 'assets/52096771-7eda-44e0-b8b7-e6f01f80fef6.svg';
 const BOOKMARK_ICON   = 'assets/c177c6d3-f624-41df-b762-f62c5c3c1873.svg';
 const CHEVRON_DOWN    = 'assets/a0fa463a-9d3b-4d0c-97ac-bba0a95d568c.svg';
-// Supports icons — two visual variants from Figma
-// Type A (inner-a): used for "Attached" — wider shape (17×12.5)
-const ICON_ATTACHED   = 'assets/1b70ab7a-75da-4af3-a691-112822c8365a.svg';
-// Type B (inner-b): used for "Sanded" and "Standard" — squarer shape (15×13.3)
-const ICON_SANDED     = 'assets/1b70ab7a-75da-4af3-a691-112822c8365a.svg';
-const ICON_STANDARD   = 'assets/1b70ab7a-75da-4af3-a691-112822c8365a.svg';
+// Supports icons — three variants from Figma
+// Attached (inner-a, 17×12.5) — wider Group1620 (supports attached to part)
+const ICON_ATTACHED   = 'assets/2bc9e001-2c71-4ef7-9d7e-16ab6f1abf01.svg';
+// Sanded (inner-b, 15×13.3) — Group1623 (smoothed part shape)
+const ICON_SANDED     = 'assets/208c1a42-1ed2-4b20-bd97-8528991a28f4.svg';
+// Standard (inner-b, 15×13.3) — same Group1623 shape (SLS)
+const ICON_STANDARD   = 'assets/208c1a42-1ed2-4b20-bd97-8528991a28f4.svg';
 const SORT_CHEVRON    = 'assets/a0fa463a-9d3b-4d0c-97ac-bba0a95d568c.svg';
 const LAYOUT_COLUMNS  = 'assets/0eb44ec3-17c9-4a6a-8e03-7178e4e49b30.svg';
 const LAYOUT_LINES    = 'assets/8c670d50-92d2-4280-a77b-f85ce8e7e394.svg';
@@ -1613,9 +1614,10 @@ const SEP_LINE        = 'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//ww
 const ICON_CROP       = 'assets/4d4efff0-d032-4f0d-ba27-ffe3be58ba73.svg';
 const ICON_COPYPASTE  = 'assets/67d29b27-19c0-4b18-93bf-b44e3dff508d.svg';
 const ICON_TRASH      = 'assets/a7a9dd7e-2b47-4bce-8c80-bf7957f0ef8c.svg';
-const ICON_REMOVED      = 'assets/1b70ab7a-75da-4af3-a691-112822c8365a.svg';
-const ICON_REMOVED_DOT1 = 'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22currentColor%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22/%3E%3C/svg%3E';
-const ICON_REMOVED_DOT2 = 'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22currentColor%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22/%3E%3C/svg%3E';
+// Removed (inner-b, 15×13.3) — Group1623 base + 5 small dots overlay (where supports were)
+const ICON_REMOVED      = 'assets/410220f7-7945-4a99-9fe6-6e7ab5b61c59.svg';
+const ICON_REMOVED_DOT1 = 'assets/f7e01bd9-cdea-4144-a4fc-21b4891659b9.svg';
+const ICON_REMOVED_DOT2 = 'assets/164f03c4-6552-45f0-b270-ed8712114231.svg';
 
 function supportsIconHTML(type) {
   if (type === 'attached') {
